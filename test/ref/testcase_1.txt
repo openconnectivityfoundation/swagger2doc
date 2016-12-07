@@ -1,0 +1,22 @@
+************************
+*** swagger2doc (v1) ***
+************************
+usage: swagger2doc.py [-h] [-ver] [-swagger [SWAGGER]] [-schema [SCHEMA]]
+                      [-docx [DOCX]] [-word_out [WORD_OUT]]
+                      [-resource [RESOURCE]] [-schemadir [SCHEMADIR]]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -ver, --verbose       Execute in verbose mode
+  -swagger [SWAGGER], --swagger [SWAGGER]
+                        swagger file name
+  -schema [SCHEMA], --schema [SCHEMA]
+                        schema to be added to word document
+  -docx [DOCX], --docx [DOCX]
+                        word file in
+  -word_out [WORD_OUT], --word_out [WORD_OUT]
+                        word file out
+  -resource [RESOURCE], --resource [RESOURCE]
+                        resource (path) to be put in the word document
+  -schemadir [SCHEMADIR], --schemadir [SCHEMADIR]
+                        path to dir with additional referenced schemas
