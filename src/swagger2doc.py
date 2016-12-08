@@ -1,16 +1,22 @@
 #############################
 #
 #    copyright 2016 Open Interconnect Consortium, Inc. All rights reserved.
-#    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-#    1.  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-#    2.  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+#    Redistribution and use in source and binary forms, with or without modification,
+#    are permitted provided that the following conditions are met:
+#    1.  Redistributions of source code must retain the above copyright notice,
+#        this list of conditions and the following disclaimer.
+#    2.  Redistributions in binary form must reproduce the above copyright notice,
+#        this list of conditions and the following disclaimer in the documentation and/or other materials provided
+#        with the distribution.
 #         
 #    THIS SOFTWARE IS PROVIDED BY THE OPEN INTERCONNECT CONSORTIUM, INC. "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-#    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE OR WARRANTIES OF NON-INFRINGEMENT,
-#    ARE DISCLAIMED. IN NO EVENT SHALL THE OPEN INTERCONNECT CONSORTIUM, INC. OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
-#    OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE OR
+#    WARRANTIES OF NON-INFRINGEMENT, ARE DISCLAIMED. IN NO EVENT SHALL THE OPEN INTERCONNECT CONSORTIUM, INC. OR
+#    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
 #    OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-#    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+#    EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #############################
 
@@ -25,20 +31,10 @@ import traceback
 from datetime import datetime
 from time import gmtime, strftime
 import jsonref
-# fix for py2exe
-from jsonschema import _utils
-import json
-from yaml import load, dump
-
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper, SafeDumper
 
 if sys.version_info < (3, 5):
-    raise Exception("ERROR: Python 3.5 or more is required, you are currently running Python %d.%d!" % (sys.version_info[0], sys.version_info[1]))
-
-
+    raise Exception("ERROR: Python 3.5 or more is required, you are currently running Python %d.%d!" %
+                    (sys.version_info[0], sys.version_info[1]))
 try: 
     from swagger_spec_validator.validator20 import validate_spec
 except:
@@ -59,7 +55,6 @@ from swagger_parser import SwaggerParser
 #
 try: 
     from docx import Document
-    #from python-docx import Document
 except:
     print("missing swagger_parser:")
     print ("Trying to Install required module: python-docx (docx)")
@@ -67,19 +62,20 @@ except:
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
-def load_json_schema(filename, dir):
+
+def load_json_schema(filename, my_dir):
     """
     load the JSON schema file
     :param filename: filename (with extension)
-    :param dir: path to the file
-    :return: json dict
+    :param my_dir: path to the file
+    :return: json_dict
     """
-    full_path = os.path.join(dir,filename)
+    full_path = os.path.join(my_dir, filename)
     if os.path.isfile(full_path) is False:
         print ("json file does not exist:", full_path)
             
     linestring = open(full_path, 'r').read()
-    json_dict =json.loads(linestring)
+    json_dict = json.loads(linestring)
 
     return json_dict
 
@@ -96,7 +92,7 @@ def get_dir_list(dir, ext=None):
     new_list = [x for x in only_files if not x.endswith(".bak")]
     if ext is not None:
         cur_list = new_list
-        new_list = [x for x in cur_list if  x.endswith(ext)]
+        new_list = [x for x in cur_list if x.endswith(ext)]
     return new_list
     
     
@@ -109,12 +105,11 @@ def find_key(rec_dict, target, depth=0):
     :return:
     """
     try:
-        #print (depth,target, rec_dict)
         if isinstance(rec_dict, dict):
-            for key,value in rec_dict.items():
+            for key, value in rec_dict.items():
                 if key == target:
                     return rec_dict[key]
-            for key,value in rec_dict.items():
+            for key, value in rec_dict.items():
                 r = find_key(value, target, depth+1)
                 if r is not None:
                         return r
@@ -135,13 +130,13 @@ def find_key_link(rec_dict, target, depth=0):
     """
     if isinstance(rec_dict, dict):
         # direct key
-        for key,value in rec_dict.items():
+        for key, value in rec_dict.items():
             if key == target:
                 return rec_dict[key]
         # key is in array
         rvalues = []
         found = False
-        for key,value in rec_dict.items():
+        for key, value in rec_dict.items():
             if key in ["oneOf", "allOf", "anyOf"]:
                 for val in value:
                     if val == target:
@@ -155,7 +150,7 @@ def find_key_link(rec_dict, target, depth=0):
         if found:
             return rvalues
         # key is an dict
-        for key,value in rec_dict.items():
+        for key, value in rec_dict.items():
             r = find_key_link(value, target, depth+1)
             if r is not None:
                 return r #[list(r.items())]
@@ -179,6 +174,7 @@ class CreateWordDoc(object):
         self.schema_switch = False
         self.schemaWT_switch = False
         self.derived_name = None
+        self.title = None
         
         schema_string = open(args.swagger, 'r').read()   
         json_dict = json.loads(schema_string)
@@ -190,7 +186,7 @@ class CreateWordDoc(object):
         :param description: input string
         :return: text string
         """
-        text = description.replace("\n","@cr").replace("'","<COMMA>").replace('"',"<COMMA>")
+        text = description.replace("\n", "@cr").replace("'", "<COMMA>").replace('"', "<COMMA>")
         return text
         
     def swag_unsanitize_description(self, description):
@@ -199,7 +195,7 @@ class CreateWordDoc(object):
         :param description: input string
         :return: text string
         """
-        text = description.replace("@cr","\n").replace("<COMMA>", "'")
+        text = description.replace("@cr", "\n").replace("<COMMA>", "'")
         return text
 
     def parse_schema_requires(self, input_string_schema):
@@ -225,14 +221,46 @@ class CreateWordDoc(object):
                             if " " not in token:
                                 required_properties.append(token)
         return required_properties
-        
-        
-    def list_resources_crudn(self, parse_tree, select_resource=None):
-        # function to create the CRUDN table
-        """
 
+    def list_resource(self, parse_tree, resource_name):
+        """
+        function to list the CRUDN behavior per resource
+        e.g. it adds an entry to the CRUDN table
         :param parse_tree:
-        :param select_resource:
+        :param resource_name: the resource_name
+     
+        """
+        full_resource_name = "/" + str(resource_name)
+        path = find_key_link(parse_tree, full_resource_name)
+
+        row_cells = self.table.add_row().cells
+        # row_cells[0].text = resource
+        row_cells[0].text = full_resource_name
+        
+        if path is not None:
+            for method, mobj in path.items():
+                # print "Method:",method
+                # PUT == Create
+                if method == "put":
+                    row_cells[1].text = method
+                # GET = Read
+                if method == "get":
+                    row_cells[2].text = method
+                # POST - update  (agreed on 05/02/2015)
+                if method == "post":
+                    row_cells[3].text = method
+                # DELETE = Delete
+                if method == "delete":
+                    row_cells[4].text = method
+                # NOTIFY = NOTIFY (does not exist)
+                if method == "notify":
+                    row_cells[5].text = method
+            
+    def list_resources_crudn(self, parse_tree, resource_name=None):
+        """
+        function to create the CRUDN table
+        :param parse_tree:
+        :param resource_name:
         """
         level = 0
         # create the table
@@ -245,57 +273,48 @@ class CreateWordDoc(object):
         hdr_cells[4].text = 'Delete'
         hdr_cells[5].text = 'Notify'
 
-        if select_resource is None:
-            # all resources
-            #for my_resource, my_obj in parse_tree.resources.items():
-            #    self.list_resource(level, my_resource, my_obj)
-            pass
-        else:
-            #for my_resource, my_obj in parse_tree.resources.items():
-            #    # only the one of the command line
-            #    if my_resource[1:] == select_resource:
-            #        self.list_resource(level, my_resource, my_obj)
-            pass
-        
-    def parse_schema(self, input_string_schema):
+        self.list_resource(parse_tree, resource_name)
+
+    def list_properties(self, parse_tree, resource_name):
         """
 
-        :param input_string_schema:
+        :param parse_tree:
+        :param resource_name:
         """
-        required_props = self.parse_schema_requires(input_string_schema)
-        print ("parse_schema: required properties found:", required_props)
-        json_dict =json.loads(input_string_schema)
+        definitions = find_key_link(parse_tree, 'definitions')
+        for object_name, json_object in definitions.items():
+            print ("handling object:", object_name)
+            property_list = find_key_link(json_object, 'properties')
+            required_props = find_key_link(json_object, 'required')
+            
+            for prop in property_list:
+                # fill the table
+                try:
+                    if isinstance(property_list, dict):
+                        print ("parse_schema: property:", prop)
+                        description_text = property_list[prop].get('description', "")
+                        read_only = property_list[prop].get('readOnly', False)
+                        my_type = property_list[prop].get('type')
+                        if my_type is None:
+                            my_type = "multiple types: see schema"
+                        if my_type == "array":
+                            my_type += ": see schema"
+                        if my_type == "object":
+                            my_type += ": see schema"
+                        row_cells = self.tableAttribute.add_row().cells
+                        row_cells[0].text = str(prop)
+                        row_cells[1].text = str(my_type)
+                        if str(prop) in required_props:
+                            row_cells[2].text = "yes"
+                        if read_only is True:
+                            row_cells[3].text = "Read Only"
+                        else:
+                            row_cells[3].text = "Read Write"
+                        row_cells[4].text = description_text
 
-        properties = find_key_link(json_dict, 'properties')
-
-        for prop in properties:
-            # fill the table
-            try:
-                if isinstance(properties, dict):
-                    print ("parse_schema: property:", prop)
-                    description_text = properties[prop].get('description', "")
-                    read_only = properties[prop].get('readOnly', False)
-                    type = properties[prop].get('type')
-                    if type is None:
-                        type = "multiple types: see schema"
-                    if type == "array":
-                        type += ": see schema"
-                    if type == "object":
-                        type += ": see schema"
-                    row_cells = self.tableAttribute.add_row().cells
-                    row_cells[0].text = str(prop)
-                    row_cells[1].text = str(type)
-                    if str(prop) in required_props:
-                        row_cells[2].text = "yes"
-                    if read_only is True:
-                        row_cells[3].text = "Read Only"
-                    else:
-                        row_cells[3].text = "Read Write"
-                    row_cells[4].text = description_text
-
-            except:
-                traceback.print_exc()
-                pass
+                except:
+                    traceback.print_exc()
+                    pass
                 
     def parse_schema_derived(self, input_string_schema):
         """
@@ -304,7 +323,7 @@ class CreateWordDoc(object):
         """
         required_props = self.parse_schema_requires(input_string_schema)
         print ("parse_schema: required properties found:", required_props)
-        json_dict =json.loads(input_string_schema)
+        json_dict = json.loads(input_string_schema)
 
         properties = find_key_link(json_dict, 'properties')
 
@@ -315,11 +334,11 @@ class CreateWordDoc(object):
                     print ("parse_schema: property:", prop)
                     description_text = properties[prop].get('description', "")
                     ocf_resource = to_ocf = from_ocf = ""
-                    my_dict =  properties[prop].get("ocf-conversion")
+                    my_dict = properties[prop].get("ocf-conversion")
                     if my_dict is not None:
                         ocf_resource = my_dict.get('ocf-alias', "")
-                        to_ocf = my_dict.get('to-ocf',"")
-                        from_ocf = my_dict.get('from-ocf',"")
+                        to_ocf = my_dict.get('to-ocf', "")
+                        from_ocf = my_dict.get('from-ocf', "")
                     
                     row_cells = self.tableAttribute.add_row().cells
                     row_cells[0].text = str(prop)
@@ -332,12 +351,12 @@ class CreateWordDoc(object):
                 traceback.print_exc()
                 pass
     
-    def list_attributes(self, parse_tree, select_resource=None):
+    def list_attributes(self, parse_tree, resource_name=None):
         """
         list all properties (attributes) in an table.
         create the table and fill it up
         :param parse_tree:
-        :param select_resource:
+        :param resource_name:
         """
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
@@ -349,15 +368,10 @@ class CreateWordDoc(object):
 
         level = 1
 
-        if select_resource is None:
-            #for resource, obj in parse_tree.resources.items():
-            #    self.list_attribute(level, resource, obj)
+        if resource_name is None:
             pass
         else:
-            #for resource, obj in parse_tree.resources.items():
-            #    if resource[1:] == select_resource:
-            #        self.list_attribute(level, resource, obj)
-            pass
+            self.list_properties(parse_tree, resource_name )
 
         if self.sensor_switch is True:
             # auto generate the sensor value data..
@@ -368,31 +382,29 @@ class CreateWordDoc(object):
             row_cells[3].text = "Read Only"
             row_cells[4].text = "True = Sensed, False = Not Sensed."
 
-        if self.schema_switch is True:
-            # add values from external schema.
-            for schema_file in self.schema_files:
-                linestring = open(schema_file, 'r').read()
-                # add fields in table with contents..
-                self.parse_schema(linestring)
+        #if self.schema_switch is True:
+        #    # add values from external schema.
+        #    for schema_file in self.schema_files:
+        #        linestring = open(schema_file, 'r').read()
+        #        # add fields in table with contents..
+        #        self.parse_schema(linestring)
                 
-    def list_attributes_derived(self, parse_tree, select_resource=None):
+    def list_attributes_derived(self, parse_tree, resource_name=None):
 
         """
         list all properties (attributes) in an table.
         create the table and fill it up
         :param parse_tree:
-        :param select_resource:
+        :param resource_name:
         """
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
-        hdr_cells[0].text = str(self.derived_name) +' Property name'
+        hdr_cells[0].text = str(self.derived_name) + ' Property name'
         hdr_cells[1].text = 'OCF Resource'
         hdr_cells[2].text = 'To OCF'
         hdr_cells[3].text = 'From OCF'
         hdr_cells[4].text = 'Description'
-
         level = 1
-
         if select_resource is None:
             for resource, obj in parse_tree.resources.items():
                 self.list_attribute(level, resource, obj, derived=True)
@@ -400,8 +412,6 @@ class CreateWordDoc(object):
             for resource, obj in parse_tree.resources.items():
                 if resource[1:] == select_resource:
                     self.list_attribute(level, resource, obj, derived=True)
-
-
         if self.schema_switch is True:
             # add values from external schema.
             for schema_file in self.schema_files:
@@ -410,12 +420,27 @@ class CreateWordDoc(object):
                 self.parse_schema(linestring)
     
     def get_value_by_path_name(self, parse_tree, path_name, target):
+        """
+        retrieve the target key below the path_name
+        :param parse_tree: tree to search from
+        :param path_name: url name (without the /)
+        :param target: key to find
+        :return:
+        """
         full_path_name = "/"+path_name
         json_path_dict = find_key_link(parse_tree, full_path_name)
         value = find_key_link(json_path_dict, target)
         return value
     
     def get_value_by_path_name2(self, parse_tree, path_name, target1, target2):
+        """
+        retrieve the target2 key below the target1 key below the path_name
+        :param parse_tree: tree to search from
+        :param path_name: url name (without the /)
+        :param target1: key to find after path_name
+        :param target1: key to find after target1 key
+        :return:
+        """
         full_path_name = "/"+path_name
         json_path_dict = find_key_link(parse_tree, full_path_name)
         value1 = find_key_link(json_path_dict, target1)
@@ -424,13 +449,10 @@ class CreateWordDoc(object):
         
     
     def generate_sections(self, parse_tree, resource_name):
-        # generate the individual sections
-
-        # just plain output
         """
-
+        generate the individual sections
         :param parse_tree:
-        :param section_name:
+        :param resource_name:
         """
         title_name = find_key_link(parse_tree, 'title')
         # TODO: we do not have an display name...
@@ -445,7 +467,7 @@ class CreateWordDoc(object):
         self.title = title_name
 
         rt_name = self.get_value_by_path_name(parse_tree, resource_name, "rt")
-        print ("RT = ", rt_name )
+        print ("RT = ", rt_name)
 
         # section Resource name
         par = self.document.add_heading(title_name, level=2)
@@ -505,13 +527,13 @@ class CreateWordDoc(object):
             if self.derived_name is not None:
                 self.list_attributes_derived(parse_tree, select_resource=resource_name)
             else:
-                self.list_attributes(parse_tree, select_resource=resource_name)
+                self.list_attributes(parse_tree, resource_name=resource_name)
 
         # section CRUDN definition
         par = self.document.add_heading('CRUDN behavior', level=3)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
-        self.list_resources_crudn(parse_tree, select_resource=resource_name)
+        self.list_resources_crudn(parse_tree, resource_name=resource_name)
 
         if self.schema_switch is True:
             # section extra JSON definition
@@ -573,8 +595,6 @@ class CreateWordDoc(object):
 
         :return:
         """
-  
-
         try:
             self.document = Document(docx=self.docx_name_in)
         except:
@@ -586,10 +606,11 @@ class CreateWordDoc(object):
         if self.docx_name_out is not None:
             self.document.save(self.docx_name_out)
             print ("document saved..", self.docx_name_out)
+
+
 #
 #   main of script
 #
-
 print ("************************")
 print ("*** swagger2doc (v1) ***")
 print ("************************")
@@ -597,12 +618,18 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument( "-ver"        , "--verbose"    , help="Execute in verbose mode", action='store_true')
 
-parser.add_argument( "-swagger"    , "--swagger"    , default=None,  help="swagger file name",  nargs='?', const="", required=False)
-parser.add_argument( "-schema"     , "--schema"     , default=None,  help="schema to be added to word document",  nargs='?', const="", required=False)
-parser.add_argument( "-docx"       , "--docx"       , default=None,  help="word file in",  nargs='?', const="", required=False)
-parser.add_argument( "-word_out"   , "--word_out"   , default=None,  help="word file out",  nargs='?', const="", required=False)
-parser.add_argument( "-resource"   , "--resource"   , default=None,  help="resource (path) to be put in the word document",  nargs='?', const="", required=False)
-parser.add_argument( "-schemadir"  , "--schemadir"  , default=".",   help="path to dir with additional referenced schemas",  nargs='?', const="", required=False)
+parser.add_argument( "-swagger"    , "--swagger"    , default=None,
+                     help="swagger file name",  nargs='?', const="", required=False)
+parser.add_argument( "-schema"     , "--schema"     , default=None,
+                     help="schema to be added to word document",  nargs='?', const="", required=False)
+parser.add_argument( "-docx"       , "--docx"       , default=None,
+                     help="word file in",  nargs='?', const="", required=False)
+parser.add_argument( "-word_out"   , "--word_out"   , default=None,
+                     help="word file out",  nargs='?', const="", required=False)
+parser.add_argument( "-resource"   , "--resource"   , default=None,
+                     help="resource (path) to be put in the word document",  nargs='?', const="", required=False)
+parser.add_argument( "-schemadir"  , "--schemadir"  , default=".",
+                     help="path to dir with additional referenced schemas",  nargs='?', const="", required=False)
 
 args = parser.parse_args()
 
