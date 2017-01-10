@@ -287,34 +287,36 @@ class CreateWordDoc(object):
             property_list = find_key_link(json_object, 'properties')
             required_props = find_key_link(json_object, 'required')
             
-            for prop in property_list:
-                # fill the table
-                try:
-                    if isinstance(property_list, dict):
-                        print ("parse_schema: property:", prop)
-                        description_text = property_list[prop].get('description', "")
-                        read_only = property_list[prop].get('readOnly', False)
-                        my_type = property_list[prop].get('type')
-                        if my_type is None:
-                            my_type = "multiple types: see schema"
-                        if my_type == "array":
-                            my_type += ": see schema"
-                        if my_type == "object":
-                            my_type += ": see schema"
-                        row_cells = self.tableAttribute.add_row().cells
-                        row_cells[0].text = str(prop)
-                        row_cells[1].text = str(my_type)
-                        if str(prop) in required_props:
-                            row_cells[2].text = "yes"
-                        if read_only is True:
-                            row_cells[3].text = "Read Only"
-                        else:
-                            row_cells[3].text = "Read Write"
-                        row_cells[4].text = description_text
+            if property_list is not None:
+                for prop in property_list:
+                    # fill the table
+                    try:
+                        if isinstance(property_list, dict):
+                            print ("parse_schema: property:", prop)
+                            description_text = property_list[prop].get('description', "")
+                            read_only = property_list[prop].get('readOnly')
+                            my_type = property_list[prop].get('type')
+                            if my_type is None:
+                                my_type = "multiple types: see schema"
+                            if my_type == "array":
+                                my_type += ": see schema"
+                            if my_type == "object":
+                                my_type += ": see schema"
+                            row_cells = self.tableAttribute.add_row().cells
+                            row_cells[0].text = str(prop)
+                            row_cells[1].text = str(my_type)
+                            if required_props is not None:
+                                if str(prop) in required_props:
+                                    row_cells[2].text = "yes"
+                            if read_only is not None and read_only is True:
+                                row_cells[3].text = "Read Only"
+                            if read_only is not None and read_only is False:
+                                row_cells[3].text = "Read Write"
+                            row_cells[4].text = description_text
 
-                except:
-                    traceback.print_exc()
-                    pass
+                    except:
+                        traceback.print_exc()
+                        pass
                 
     def parse_schema_derived(self, input_string_schema):
         """
@@ -499,7 +501,7 @@ class CreateWordDoc(object):
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
         if rt_name is not None:
-            text = "The resource type (rt) is defined as: " + rt_name + "."
+            text = "The resource type (rt) is defined as: " + str(rt_name) + "."
             self.document.add_paragraph(text)
         else:
             print ("RT not found!")
@@ -643,7 +645,8 @@ print("word_out    : " + str(args.word_out))
 print("")
 
 try:
-    swagger_parser = SwaggerParser(swagger_path=args.swagger)  # Init with file
+    #swagger_parser = SwaggerParser(swagger_path=args.swagger)  # Init with file
+    swagger_parser=None
     worddoc = CreateWordDoc(swagger_parser)
     worddoc.docx_name_in = args.docx
     worddoc.docx_name_out = args.word_out
