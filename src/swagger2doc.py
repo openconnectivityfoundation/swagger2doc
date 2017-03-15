@@ -221,6 +221,33 @@ class CreateWordDoc(object):
                             if " " not in token:
                                 required_properties.append(token)
         return required_properties
+        
+    def list_to_array(self, input_list):
+        """
+        generates an raml string representation of an python list
+        :param input_list: python array
+        :return: string as raml string representation. example = "[ 'blah', 'blah2' ]"
+        """
+        my_string = "["
+        for x in input_list:
+            comma = ", "
+            my_string = my_string + '"' + x + '"' + comma
+        # remove last comman (e.g. last 2 chars)
+        my_string = my_string[:-2]
+        my_string += "]"
+        return my_string
+        
+    def list_to_string(self, input_list):
+        """
+        generates an raml string representation of an python list
+        :rtype : string
+        :param input_list: python array ["aa", "bb"
+        :return: string example "aabb"
+        """
+        my_string = ""
+        for x in input_list:
+            my_string = my_string + x
+        return my_string
 
     def list_resource(self, parse_tree, resource_name):
         """
@@ -292,7 +319,7 @@ class CreateWordDoc(object):
                     # fill the table
                     try:
                         if isinstance(property_list, dict):
-                            print ("parse_schema: property:", prop)
+                            print ("list_properties: property:", prop)
                             description_text = property_list[prop].get('description', "")
                             read_only = property_list[prop].get('readOnly')
                             my_type = property_list[prop].get('type')
@@ -317,41 +344,45 @@ class CreateWordDoc(object):
                     except:
                         traceback.print_exc()
                         pass
+                        
+                        
+    def list_properties_derived(self, parse_tree, resource_name):
+        """
+
+        :param parse_tree:
+        :param resource_name:
+        """
+        definitions = find_key_link(parse_tree, 'definitions')
+        for object_name, json_object in definitions.items():
+            print ("handling object:", object_name)
+            property_list = find_key_link(json_object, 'properties')
+            required_props = find_key_link(json_object, 'required')
+            
+            if property_list is not None:
+                for prop in property_list:
+                    # fill the table
+                    try:
+                        if isinstance(property_list, dict):
+                            print ("parse_schema: property:", prop)
+                            description_text = property_list[prop].get('description', "")
+                            ocf_resource = to_ocf = from_ocf = ""
+                            my_dict = property_list[prop].get("x-ocf-conversion")
+                            if my_dict is not None:
+                                ocf_resource = my_dict.get('x-ocf-alias', "")
+                                to_ocf = my_dict.get('x-to-ocf', "")
+                                from_ocf = my_dict.get('x-from-ocf', "")
+                            
+                            row_cells = self.tableAttribute.add_row().cells
+                            row_cells[0].text = str(prop)
+                            row_cells[1].text = str(ocf_resource)
+                            row_cells[2].text = self.list_to_string(to_ocf)
+                            row_cells[3].text = self.list_to_string(from_ocf)
+                            row_cells[4].text = description_text
+
+                    except:
+                        traceback.print_exc()
+                        pass
                 
-    def parse_schema_derived(self, input_string_schema):
-        """
-
-        :param input_string_schema:
-        """
-        required_props = self.parse_schema_requires(input_string_schema)
-        print ("parse_schema: required properties found:", required_props)
-        json_dict = json.loads(input_string_schema)
-
-        properties = find_key_link(json_dict, 'properties')
-
-        for prop in properties:
-            # fill the table
-            try:
-                if isinstance(properties, dict):
-                    print ("parse_schema: property:", prop)
-                    description_text = properties[prop].get('description', "")
-                    ocf_resource = to_ocf = from_ocf = ""
-                    my_dict = properties[prop].get("ocf-conversion")
-                    if my_dict is not None:
-                        ocf_resource = my_dict.get('ocf-alias', "")
-                        to_ocf = my_dict.get('to-ocf', "")
-                        from_ocf = my_dict.get('from-ocf', "")
-                    
-                    row_cells = self.tableAttribute.add_row().cells
-                    row_cells[0].text = str(prop)
-                    row_cells[1].text = str(ocf_resource)
-                    row_cells[2].text = self.list_to_string(to_ocf)
-                    row_cells[3].text = self.list_to_string(from_ocf)
-                    row_cells[4].text = description_text
-
-            except:
-                traceback.print_exc()
-                pass
     
     def list_attributes(self, parse_tree, resource_name=None):
         """
@@ -391,13 +422,13 @@ class CreateWordDoc(object):
         #        # add fields in table with contents..
         #        self.parse_schema(linestring)
                 
-    def list_attributes_derived(self, parse_tree, resource_name=None):
+    def list_attributes_derived(self, parse_tree, select_resource=None):
 
         """
         list all properties (attributes) in an table.
         create the table and fill it up
         :param parse_tree:
-        :param resource_name:
+        :param select_resource:
         """
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
@@ -408,18 +439,9 @@ class CreateWordDoc(object):
         hdr_cells[4].text = 'Description'
         level = 1
         if select_resource is None:
-            for resource, obj in parse_tree.resources.items():
-                self.list_attribute(level, resource, obj, derived=True)
+            pass
         else:
-            for resource, obj in parse_tree.resources.items():
-                if resource[1:] == select_resource:
-                    self.list_attribute(level, resource, obj, derived=True)
-        if self.schema_switch is True:
-            # add values from external schema.
-            for schema_file in self.schema_files:
-                linestring = open(schema_file, 'r').read()
-                # add fields in table with contents..
-                self.parse_schema(linestring)
+            self.list_properties_derived(parse_tree, select_resource )
     
     def get_value_by_path_name(self, parse_tree, path_name, target):
         """
@@ -632,6 +654,8 @@ parser.add_argument( "-resource"   , "--resource"   , default=None,
                      help="resource (path) to be put in the word document",  nargs='?', const="", required=False)
 parser.add_argument( "-schemadir"  , "--schemadir"  , default=".",
                      help="path to dir with additional referenced schemas",  nargs='?', const="", required=False)
+                     
+parser.add_argument('-derived', '--derived', default=None, help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table use "." to ignore the property name setting')
 
 args = parser.parse_args()
 
@@ -642,6 +666,7 @@ print("schema      : " + str(args.schema))
 print("schemadir   : " + str(args.schemadir))
 print("docx        : " + str(args.docx))
 print("word_out    : " + str(args.word_out))
+print("derived     : " + str(args.derived))
 print("")
 
 try:
@@ -651,6 +676,10 @@ try:
     worddoc.docx_name_in = args.docx
     worddoc.docx_name_out = args.word_out
     worddoc.resource_name = args.resource
+    
+    worddoc.derived_name = args.derived
+    if worddoc.derived_name in ["."]:
+        worddoc.derived_name = ""
     
     worddoc.convert()
 
