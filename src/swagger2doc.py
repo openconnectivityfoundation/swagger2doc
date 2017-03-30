@@ -8,7 +8,7 @@
 #    2.  Redistributions in binary form must reproduce the above copyright notice,
 #        this list of conditions and the following disclaimer in the documentation and/or other materials provided
 #        with the distribution.
-#         
+#
 #    THIS SOFTWARE IS PROVIDED BY THE OPEN INTERCONNECT CONSORTIUM, INC. "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 #    INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE OR
 #    WARRANTIES OF NON-INFRINGEMENT, ARE DISCLAIMED. IN NO EVENT SHALL THE OPEN INTERCONNECT CONSORTIUM, INC. OR
@@ -21,8 +21,8 @@
 #############################
 
 
-import time 
-import os    
+import time
+import os
 import json
 import random
 import sys
@@ -35,30 +35,30 @@ import jsonref
 if sys.version_info < (3, 5):
     raise Exception("ERROR: Python 3.5 or more is required, you are currently running Python %d.%d!" %
                     (sys.version_info[0], sys.version_info[1]))
-try: 
+try:
     from swagger_spec_validator.validator20 import validate_spec
 except:
     print("missing swagger_parser:")
     print ("Trying to Install required module: swagger_parser ")
-    os.system('python3 -m pip install swagger_spec_validator.validator20')
+    os.system('c:\python35\python.exe -m pip install swagger_spec_validator')
 from swagger_spec_validator.validator20 import validate_spec
 
-try: 
+try:
     from swagger_parser import SwaggerParser
 except:
     print("missing swagger_parser:")
     print ("Trying to Install required module: swagger_parser ")
-    os.system('python3 -m pip install swagger_parser')
+    os.system('c:\python35\python.exe -m pip install swagger_parser')
 from swagger_parser import SwaggerParser
 #
 # docx imports
 #
-try: 
+try:
     from docx import Document
 except:
     print("missing swagger_parser:")
     print ("Trying to Install required module: python-docx (docx)")
-    os.system('python3 -m pip install python-docx')
+    os.system('c:\python35\python.exe -m pip install python-docx')
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
@@ -73,7 +73,7 @@ def load_json_schema(filename, my_dir):
     full_path = os.path.join(my_dir, filename)
     if os.path.isfile(full_path) is False:
         print ("json file does not exist:", full_path)
-            
+
     linestring = open(full_path, 'r').read()
     json_dict = json.loads(linestring)
 
@@ -94,8 +94,8 @@ def get_dir_list(dir, ext=None):
         cur_list = new_list
         new_list = [x for x in cur_list if x.endswith(ext)]
     return new_list
-    
-    
+
+
 def find_key(rec_dict, target, depth=0):
     """
     find key "target" in recursive dict
@@ -175,11 +175,11 @@ class CreateWordDoc(object):
         self.schemaWT_switch = False
         self.derived_name = None
         self.title = None
-        
-        schema_string = open(args.swagger, 'r').read()   
+
+        schema_string = open(args.swagger, 'r').read()
         json_dict = json.loads(schema_string)
         self.json_parse_tree = json_dict
-        
+
     def swag_sanitize_description(self, description):
         """
         removes line breaks, quotes  etc
@@ -188,7 +188,7 @@ class CreateWordDoc(object):
         """
         text = description.replace("\n", "@cr").replace("'", "<COMMA>").replace('"', "<COMMA>")
         return text
-        
+
     def swag_unsanitize_description(self, description):
         """
         removes line breaks, quotes  etc
@@ -221,7 +221,7 @@ class CreateWordDoc(object):
                             if " " not in token:
                                 required_properties.append(token)
         return required_properties
-        
+
     def list_to_array(self, input_list):
         """
         generates an raml string representation of an python list
@@ -236,7 +236,7 @@ class CreateWordDoc(object):
         my_string = my_string[:-2]
         my_string += "]"
         return my_string
-        
+
     def list_to_string(self, input_list):
         """
         generates an raml string representation of an python list
@@ -255,7 +255,7 @@ class CreateWordDoc(object):
         e.g. it adds an entry to the CRUDN table
         :param parse_tree:
         :param resource_name: the resource_name
-     
+
         """
         full_resource_name = "/" + str(resource_name)
         path = find_key_link(parse_tree, full_resource_name)
@@ -263,7 +263,7 @@ class CreateWordDoc(object):
         row_cells = self.table.add_row().cells
         # row_cells[0].text = resource
         row_cells[0].text = full_resource_name
-        
+
         if path is not None:
             for method, mobj in path.items():
                 # print "Method:",method
@@ -282,7 +282,7 @@ class CreateWordDoc(object):
                 # NOTIFY = NOTIFY (does not exist)
                 if method == "notify":
                     row_cells[5].text = method
-            
+
     def list_resources_crudn(self, parse_tree, resource_name=None):
         """
         function to create the CRUDN table
@@ -313,7 +313,7 @@ class CreateWordDoc(object):
             print ("handling object:", object_name)
             property_list = find_key_link(json_object, 'properties')
             required_props = find_key_link(json_object, 'required')
-            
+
             if property_list is not None:
                 for prop in property_list:
                     # fill the table
@@ -344,8 +344,8 @@ class CreateWordDoc(object):
                     except:
                         traceback.print_exc()
                         pass
-                        
-                        
+
+
     def list_properties_derived(self, parse_tree, resource_name):
         """
 
@@ -357,7 +357,7 @@ class CreateWordDoc(object):
             print ("handling object:", object_name)
             property_list = find_key_link(json_object, 'properties')
             required_props = find_key_link(json_object, 'required')
-            
+
             if property_list is not None:
                 for prop in property_list:
                     # fill the table
@@ -371,7 +371,7 @@ class CreateWordDoc(object):
                                 ocf_resource = my_dict.get('x-ocf-alias', "")
                                 to_ocf = my_dict.get('x-to-ocf', "")
                                 from_ocf = my_dict.get('x-from-ocf', "")
-                            
+
                             row_cells = self.tableAttribute.add_row().cells
                             row_cells[0].text = str(prop)
                             row_cells[1].text = str(ocf_resource)
@@ -382,8 +382,8 @@ class CreateWordDoc(object):
                     except:
                         traceback.print_exc()
                         pass
-                
-    
+
+
     def list_attributes(self, parse_tree, resource_name=None):
         """
         list all properties (attributes) in an table.
@@ -421,7 +421,7 @@ class CreateWordDoc(object):
         #        linestring = open(schema_file, 'r').read()
         #        # add fields in table with contents..
         #        self.parse_schema(linestring)
-                
+
     def list_attributes_derived(self, parse_tree, select_resource=None):
 
         """
@@ -442,7 +442,7 @@ class CreateWordDoc(object):
             pass
         else:
             self.list_properties_derived(parse_tree, select_resource )
-    
+
     def get_value_by_path_name(self, parse_tree, path_name, target):
         """
         retrieve the target key below the path_name
@@ -455,7 +455,7 @@ class CreateWordDoc(object):
         json_path_dict = find_key_link(parse_tree, full_path_name)
         value = find_key_link(json_path_dict, target)
         return value
-    
+
     def get_value_by_path_name2(self, parse_tree, path_name, target1, target2):
         """
         retrieve the target2 key below the target1 key below the path_name
@@ -470,8 +470,8 @@ class CreateWordDoc(object):
         value1 = find_key_link(json_path_dict, target1)
         value = find_key_link(value1, target2)
         return value
-        
-    
+
+
     def generate_sections(self, parse_tree, resource_name):
         """
         generate the individual sections
@@ -532,8 +532,8 @@ class CreateWordDoc(object):
         par = self.document.add_heading('Swagger2.0 Definition', level=3)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
-        
-        object_string = open(args.swagger, 'r').read()   
+
+        object_string = open(args.swagger, 'r').read()
         sanitized_text = self.swag_unsanitize_description(object_string)
         #object_string = json.dumps(parse_tree, sort_keys=True, indent=2, separators=(',', ': '))
         try:
@@ -612,7 +612,7 @@ class CreateWordDoc(object):
                     par.alignment = WD_ALIGN_PARAGRAPH.LEFT
                 except:
                     pass
-    
+
     def convert(self):
         """
         conversion of the swagger data into the word document
@@ -654,7 +654,7 @@ parser.add_argument( "-resource"   , "--resource"   , default=None,
                      help="resource (path) to be put in the word document",  nargs='?', const="", required=False)
 parser.add_argument( "-schemadir"  , "--schemadir"  , default=".",
                      help="path to dir with additional referenced schemas",  nargs='?', const="", required=False)
-                     
+
 parser.add_argument('-derived', '--derived', default=None, help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table use "." to ignore the property name setting')
 
 args = parser.parse_args()
@@ -676,11 +676,11 @@ try:
     worddoc.docx_name_in = args.docx
     worddoc.docx_name_out = args.word_out
     worddoc.resource_name = args.resource
-    
+
     worddoc.derived_name = args.derived
     if worddoc.derived_name in ["."]:
         worddoc.derived_name = ""
-    
+
     worddoc.convert()
 
     print (swagger_parser)
@@ -688,4 +688,3 @@ except:
     print ("error in ", args.swagger)
     traceback.print_exc()
     pass
-    
