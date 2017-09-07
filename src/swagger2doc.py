@@ -195,7 +195,9 @@ class CreateWordDoc(object):
         :param description: input string
         :return: text string
         """
-        text = description.replace("@cr", "\n").replace("<COMMA>", "'")
+        text = description
+        if description is not None:
+            text = description.replace("@cr", "\n").replace("<COMMA>", "'")
         return text
 
     def parse_schema_requires(self, input_string_schema):
