@@ -658,6 +658,7 @@ parser.add_argument( "-schemadir"  , "--schemadir"  , default=".",
                      help="path to dir with additional referenced schemas",  nargs='?', const="", required=False)
 
 parser.add_argument('-derived', '--derived', default=None, help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table use "." to ignore the property name setting')
+parser.add_argument('-annex', '--annex', help='uses a annex heading instead of normal heading (--annex true)')
 
 args = parser.parse_args()
 
@@ -678,6 +679,14 @@ try:
     worddoc.docx_name_in = args.docx
     worddoc.docx_name_out = args.word_out
     worddoc.resource_name = args.resource
+
+    annex_switch = args.annex
+    if annex_switch is None:
+        annex_switch = False
+    else:
+        annex_switch = True
+
+    worddoc.annex_switch = annex_switch
 
     worddoc.derived_name = args.derived
     if worddoc.derived_name in ["."]:
