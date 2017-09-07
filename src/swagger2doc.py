@@ -311,41 +311,42 @@ class CreateWordDoc(object):
         :param resource_name:
         """
         definitions = find_key_link(parse_tree, 'definitions')
-        for object_name, json_object in definitions.items():
-            print ("handling object:", object_name)
-            property_list = find_key_link(json_object, 'properties')
-            required_props = find_key_link(json_object, 'required')
+        if definitions is not None:
+            for object_name, json_object in definitions.items():
+                print ("handling object:", object_name)
+                property_list = find_key_link(json_object, 'properties')
+                required_props = find_key_link(json_object, 'required')
 
-            if property_list is not None:
-                for prop in property_list:
-                    # fill the table
-                    try:
-                        if isinstance(property_list, dict):
-                            print ("list_properties: property:", prop)
-                            description_text = property_list[prop].get('description', "")
-                            read_only = property_list[prop].get('readOnly')
-                            my_type = property_list[prop].get('type')
-                            if my_type is None:
-                                my_type = "multiple types: see schema"
-                            if my_type == "array":
-                                my_type += ": see schema"
-                            if my_type == "object":
-                                my_type += ": see schema"
-                            row_cells = self.tableAttribute.add_row().cells
-                            row_cells[0].text = str(prop)
-                            row_cells[1].text = str(my_type)
-                            if required_props is not None:
-                                if str(prop) in required_props:
-                                    row_cells[2].text = "yes"
-                            if read_only is not None and read_only is True:
-                                row_cells[3].text = "Read Only"
-                            if read_only is not None and read_only is False:
-                                row_cells[3].text = "Read Write"
-                            row_cells[4].text = description_text
+                if property_list is not None:
+                    for prop in property_list:
+                        # fill the table
+                        try:
+                            if isinstance(property_list, dict):
+                                print ("list_properties: property:", prop)
+                                description_text = property_list[prop].get('description', "")
+                                read_only = property_list[prop].get('readOnly')
+                                my_type = property_list[prop].get('type')
+                                if my_type is None:
+                                    my_type = "multiple types: see schema"
+                                if my_type == "array":
+                                    my_type += ": see schema"
+                                if my_type == "object":
+                                    my_type += ": see schema"
+                                row_cells = self.tableAttribute.add_row().cells
+                                row_cells[0].text = str(prop)
+                                row_cells[1].text = str(my_type)
+                                if required_props is not None:
+                                    if str(prop) in required_props:
+                                        row_cells[2].text = "yes"
+                                if read_only is not None and read_only is True:
+                                    row_cells[3].text = "Read Only"
+                                if read_only is not None and read_only is False:
+                                    row_cells[3].text = "Read Write"
+                                row_cells[4].text = description_text
 
-                    except:
-                        traceback.print_exc()
-                        pass
+                        except:
+                            traceback.print_exc()
+                            pass
 
 
     def list_properties_derived(self, parse_tree, resource_name):
@@ -355,35 +356,36 @@ class CreateWordDoc(object):
         :param resource_name:
         """
         definitions = find_key_link(parse_tree, 'definitions')
-        for object_name, json_object in definitions.items():
-            print ("handling object:", object_name)
-            property_list = find_key_link(json_object, 'properties')
-            required_props = find_key_link(json_object, 'required')
+        if defintions is not None:
+            for object_name, json_object in definitions.items():
+                print ("handling object:", object_name)
+                property_list = find_key_link(json_object, 'properties')
+                required_props = find_key_link(json_object, 'required')
 
-            if property_list is not None:
-                for prop in property_list:
-                    # fill the table
-                    try:
-                        if isinstance(property_list, dict):
-                            print ("parse_schema: property:", prop)
-                            description_text = property_list[prop].get('description', "")
-                            ocf_resource = to_ocf = from_ocf = ""
-                            my_dict = property_list[prop].get("x-ocf-conversion")
-                            if my_dict is not None:
-                                ocf_resource = my_dict.get('x-ocf-alias', "")
-                                to_ocf = my_dict.get('x-to-ocf', "")
-                                from_ocf = my_dict.get('x-from-ocf', "")
+                if property_list is not None:
+                    for prop in property_list:
+                        # fill the table
+                        try:
+                            if isinstance(property_list, dict):
+                                print ("parse_schema: property:", prop)
+                                description_text = property_list[prop].get('description', "")
+                                ocf_resource = to_ocf = from_ocf = ""
+                                my_dict = property_list[prop].get("x-ocf-conversion")
+                                if my_dict is not None:
+                                    ocf_resource = my_dict.get('x-ocf-alias', "")
+                                    to_ocf = my_dict.get('x-to-ocf', "")
+                                    from_ocf = my_dict.get('x-from-ocf', "")
 
-                            row_cells = self.tableAttribute.add_row().cells
-                            row_cells[0].text = str(prop)
-                            row_cells[1].text = str(ocf_resource)
-                            row_cells[2].text = self.list_to_string(to_ocf)
-                            row_cells[3].text = self.list_to_string(from_ocf)
-                            row_cells[4].text = description_text
+                                row_cells = self.tableAttribute.add_row().cells
+                                row_cells[0].text = str(prop)
+                                row_cells[1].text = str(ocf_resource)
+                                row_cells[2].text = self.list_to_string(to_ocf)
+                                row_cells[3].text = self.list_to_string(from_ocf)
+                                row_cells[4].text = description_text
 
-                    except:
-                        traceback.print_exc()
-                        pass
+                        except:
+                            traceback.print_exc()
+                            pass
 
 
     def list_attributes(self, parse_tree, resource_name=None):
