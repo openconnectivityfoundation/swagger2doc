@@ -176,9 +176,19 @@ class CreateWordDoc(object):
         self.derived_name = None
         self.title = None
 
-        schema_string = open(args.swagger, 'r').read()
-        json_dict = json.loads(schema_string)
-        self.json_parse_tree = json_dict
+        try:
+            schema_string = open(args.swagger, 'r').read()
+        except:
+            print ("CreateWordDoc *** ERROR : could not open:", args.swagger)
+            return
+        
+        try:
+            json_dict = json.loads(schema_string)
+            self.json_parse_tree = json_dict
+        except:
+            print ("CreateWordDoc *** ERROR : error in JSON:", args.swagger)
+            traceback.print_exc()
+            
 
     def swag_sanitize_description(self, description):
         """
