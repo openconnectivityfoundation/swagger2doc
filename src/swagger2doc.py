@@ -530,7 +530,8 @@ class CreateWordDoc(object):
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
         #self.list_URIs(parse_tree, select_resource=resource_name)
-        self.document.add_paragraph("/"+str(resource_name))
+        url_without_query= str(resource_name).split('?')[0]
+        self.document.add_paragraph("/"+str(url_without_query))
 
         # section RT
         par = self.document.add_heading('Resource Type', level=3)
