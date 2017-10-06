@@ -274,7 +274,8 @@ class CreateWordDoc(object):
 
         row_cells = self.table.add_row().cells
         # row_cells[0].text = resource
-        row_cells[0].text = full_resource_name
+        full_resource_name_no_query = full_resource_name.split("?")[0]
+        row_cells[0].text = full_resource_name_no_query
 
         if path is not None:
             for method, mobj in path.items():
@@ -569,7 +570,7 @@ class CreateWordDoc(object):
                 self.list_attributes(parse_tree, resource_name=resource_name)
 
         # section CRUDN definition
-        par = self.document.add_heading('CRUDN behavior', level=3)
+        par = self.document.add_heading('CRUDN behaviour', level=3)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
         self.list_resources_crudn(parse_tree, resource_name=resource_name)
