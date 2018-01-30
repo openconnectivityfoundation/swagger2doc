@@ -333,27 +333,32 @@ class CreateWordDoc(object):
                         # fill the table
                         try:
                             if isinstance(property_list, dict):
-                                print ("list_properties: property:", prop)
-                                description_text = property_list[prop].get('description', "")
-                                read_only = property_list[prop].get('readOnly')
-                                my_type = property_list[prop].get('type')
-                                if my_type is None:
-                                    my_type = "multiple types: see schema"
-                                if my_type == "array":
-                                    my_type += ": see schema"
-                                if my_type == "object":
-                                    my_type += ": see schema"
-                                row_cells = self.tableAttribute.add_row().cells
-                                row_cells[0].text = str(prop)
-                                row_cells[1].text = str(my_type)
-                                if required_props is not None:
-                                    if str(prop) in required_props:
-                                        row_cells[2].text = "yes"
-                                if read_only is not None and read_only is True:
-                                    row_cells[3].text = "Read Only"
-                                if read_only is not None and read_only is False:
-                                    row_cells[3].text = "Read Write"
-                                row_cells[4].text = description_text
+                                if isinstance(property_list[prop], dict):
+                                    print ("list_properties: property:", prop)
+                                    description_text = property_list[prop].get('description', "")
+                                    read_only = property_list[prop].get('readOnly')
+                                    my_type = property_list[prop].get('type')
+                                    if my_type is None:
+                                        my_type = "multiple types: see schema"
+                                    if my_type == "array":
+                                        my_type += ": see schema"
+                                    if my_type == "object":
+                                        my_type += ": see schema"
+                                    row_cells = self.tableAttribute.add_row().cells
+                                    row_cells[0].text = str(prop)
+                                    row_cells[1].text = str(my_type)
+                                    if required_props is not None:
+                                        if str(prop) in required_props:
+                                            row_cells[2].text = "yes"
+                                    if read_only is not None and read_only is True:
+                                        row_cells[3].text = "Read Only"
+                                    if read_only is not None and read_only is False:
+                                        row_cells[3].text = "Read Write"
+                                    row_cells[4].text = description_text
+                                else:
+                                    print ("list_properties : not handled:", prop, properties[prop])
+                            else:
+                                print ("list_properties : not handled:", prop, properties[prop])
 
                         except:
                             traceback.print_exc()
@@ -378,22 +383,26 @@ class CreateWordDoc(object):
                         # fill the table
                         try:
                             if isinstance(property_list, dict):
-                                print ("parse_schema: property:", prop)
-                                description_text = property_list[prop].get('description', "")
-                                ocf_resource = to_ocf = from_ocf = ""
-                                my_dict = property_list[prop].get("x-ocf-conversion")
-                                if my_dict is not None:
-                                    ocf_resource = my_dict.get('x-ocf-alias', "")
-                                    to_ocf = my_dict.get('x-to-ocf', "")
-                                    from_ocf = my_dict.get('x-from-ocf', "")
+                                if isinstance(property_list[prop], dict):
+                                    print ("parse_schema: property:", prop)
+                                    description_text = property_list[prop].get('description', "")
+                                    ocf_resource = to_ocf = from_ocf = ""
+                                    my_dict = property_list[prop].get("x-ocf-conversion")
+                                    if my_dict is not None:
+                                        ocf_resource = my_dict.get('x-ocf-alias', "")
+                                        to_ocf = my_dict.get('x-to-ocf', "")
+                                        from_ocf = my_dict.get('x-from-ocf', "")
 
-                                row_cells = self.tableAttribute.add_row().cells
-                                row_cells[0].text = str(prop)
-                                row_cells[1].text = str(ocf_resource)
-                                row_cells[2].text = self.list_to_string(to_ocf)
-                                row_cells[3].text = self.list_to_string(from_ocf)
-                                row_cells[4].text = description_text
-
+                                    row_cells = self.tableAttribute.add_row().cells
+                                    row_cells[0].text = str(prop)
+                                    row_cells[1].text = str(ocf_resource)
+                                    row_cells[2].text = self.list_to_string(to_ocf)
+                                    row_cells[3].text = self.list_to_string(from_ocf)
+                                    row_cells[4].text = description_text
+                                else:
+                                    print ("list_properties_derived : not handled:", prop, properties[prop])
+                            else:
+                                print ("list_properties_derived : not handled:", prop, properties[prop])
                         except:
                             traceback.print_exc()
                             pass
