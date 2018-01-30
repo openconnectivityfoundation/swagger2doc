@@ -356,9 +356,9 @@ class CreateWordDoc(object):
                                         row_cells[3].text = "Read Write"
                                     row_cells[4].text = description_text
                                 else:
-                                    print ("list_properties : not handled:", prop, properties[prop])
+                                    print ("list_properties : not handled:", prop, property_list[prop])
                             else:
-                                print ("list_properties : not handled:", prop, properties[prop])
+                                print ("list_properties : not handled:", prop, property_list[prop])
 
                         except:
                             traceback.print_exc()
