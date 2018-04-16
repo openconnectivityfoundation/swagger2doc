@@ -746,7 +746,7 @@ class CreateWordDoc(object):
 #   main of script
 #
 print ("************************")
-print ("*** swagger2doc (v1) ***")
+print ("*** swagger2doc (v1.0.1) ***")
 print ("************************")
 parser = argparse.ArgumentParser()
 
