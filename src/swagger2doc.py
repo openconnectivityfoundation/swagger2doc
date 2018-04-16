@@ -61,6 +61,59 @@ except:
     os.system('c:\python35\python.exe -m pip install python-docx')
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+
+# see https://github.com/python-openxml/python-docx/issues/359
+
+def MarkIndexEntry(entry,paragraph):
+    run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'begin')
+    r.append(fldChar)
+
+    run = paragraph.add_run()
+    r = run._r
+    instrText = OxmlElement('w:instrText')
+    instrText.set(qn('xml:space'), 'preserve')
+    #instrText.text = ' XE "%s" '%(entry)
+    #r.append(instrText)
+
+    run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'end')
+    r.append(fldChar)
+
+
+def Figure(paragraph):
+    run = run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'begin')
+    r.append(fldChar)
+    instrText = OxmlElement('w:instrText')
+    instrText.text = ' SEQ Figure \* ARABIC'
+    r.append(instrText)
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'end')
+    r.append(fldChar)
+
+
+def Table(paragraph):
+    run = run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'begin')
+    r.append(fldChar)
+    instrText = OxmlElement('w:instrText')
+    instrText.text = ' SEQ Table \* ARABIC'
+    r.append(instrText)
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'end')
+    r.append(fldChar)
 
 
 def load_json_schema(filename, my_dir):
@@ -293,8 +346,8 @@ class CreateWordDoc(object):
                 if method == "delete":
                     row_cells[4].text = method
                 # NOTIFY = NOTIFY (does not exist)
-                if method == "notify":
-                    row_cells[5].text = method
+                if method == "get":
+                    row_cells[5].text = "observe"
 
     def list_resources_crudn(self, parse_tree, resource_name=None):
         """
@@ -303,8 +356,15 @@ class CreateWordDoc(object):
         :param resource_name:
         """
         level = 0
+        
+        # create the caption
+        paragraph = self.document.add_paragraph('Table ', style='Caption')
+        Table (paragraph)
+        paragraph.add_run(" The CRUDN operations of the resource with type 'rt' = "+resource_name)
+
         # create the table
         self.table = self.document.add_table(rows=1, cols=6, style='TABLE-A')
+                
         hdr_cells = self.table.rows[0].cells
         hdr_cells[0].text = 'Resource'
         hdr_cells[1].text = 'Create'
@@ -349,12 +409,19 @@ class CreateWordDoc(object):
                                     row_cells[1].text = str(my_type)
                                     if required_props is not None:
                                         if str(prop) in required_props:
-                                            row_cells[2].text = "yes"
+                                            row_cells[2].text = "Yes"
+                                        else:
+                                            row_cells[2].text = "No"
                                     if read_only is not None and read_only is True:
                                         row_cells[3].text = "Read Only"
                                     if read_only is not None and read_only is False:
                                         row_cells[3].text = "Read Write"
-                                    row_cells[4].text = description_text
+                                    if read_only is None :
+                                        # default value is false, see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
+                                        row_cells[3].text = "Read Write"
+                                    text_par = row_cells[4].add_paragraph(description_text)
+                                    text_par.alignment=WD_ALIGN_PARAGRAPH.LEFT
+                                    #row_cells[4].text = description_text
                                 else:
                                     print ("list_properties : not handled:", prop, property_list[prop])
                             else:
@@ -415,6 +482,12 @@ class CreateWordDoc(object):
         :param parse_tree:
         :param resource_name:
         """
+        
+        # create the caption
+        paragraph = self.document.add_paragraph('Table ', style='Caption')
+        Table (paragraph)
+        paragraph.add_run(" The properties definitions of the resource with type 'rt' = "+resource_name)
+        # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = 'Property name'
@@ -454,6 +527,12 @@ class CreateWordDoc(object):
         :param parse_tree:
         :param select_resource:
         """
+        
+        # create the caption
+        paragraph = self.document.add_paragraph('Table ', style='Caption')
+        Table (paragraph)
+        paragraph.add_run(" The derived properties")
+        # create the table        
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
@@ -529,7 +608,8 @@ class CreateWordDoc(object):
         print ("description:", description_value)
         new_text = self.swag_unsanitize_description(description_value)
         print ("sanitzied text:", new_text)
-        self.document.add_paragraph(new_text)
+        par_text = self.document.add_paragraph(new_text)
+        par_text.alignment = WD_ALIGN_PARAGRAPH.LEFT
         #self.document.add_paragraph(value)
 
         # section URI
@@ -618,6 +698,11 @@ class CreateWordDoc(object):
 
                 schema_text = open(schema_file, 'r').read()
 
+                # create the caption
+                paragraph = self.document.add_paragraph('Table ', style='Caption')
+                Table (paragraph)
+                paragraph.add_run(" The properties definitions of schema file "+schema_file)
+                # create the table
                 self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
 
                 hdr_cells = self.tableAttribute.rows[0].cells
