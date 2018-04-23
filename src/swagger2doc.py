@@ -361,6 +361,7 @@ class CreateWordDoc(object):
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
         paragraph.add_run(" The CRUDN operations of the resource with type 'rt' = "+resource_name)
+        paragraph.style = 'TABLE-title'
 
         # create the table
         self.table = self.document.add_table(rows=1, cols=6, style='TABLE-A')
@@ -487,6 +488,7 @@ class CreateWordDoc(object):
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
         paragraph.add_run(" The properties definitions of the resource with type 'rt' = "+resource_name)
+        paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
@@ -532,6 +534,7 @@ class CreateWordDoc(object):
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
         paragraph.add_run(" The derived properties")
+        paragraph.style = 'TABLE-title'
         # create the table        
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
@@ -702,6 +705,8 @@ class CreateWordDoc(object):
                 paragraph = self.document.add_paragraph('Table ', style='Caption')
                 Table (paragraph)
                 paragraph.add_run(" The properties definitions of schema file "+schema_file)
+                paragraph.style = 'TABLE-title'
+                
                 # create the table
                 self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
 
