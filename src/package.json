@@ -1,0 +1,23 @@
+{
+  "name": "swagger-validator",
+  "version": "1.0.0",
+  "description": "Command line swagger validator",
+  "keywords": [
+    "swagger",
+    "validator",
+    "cli"
+  ],
+  "author": "Wouter van der Beek <wovander@cisco.com>",
+  "preferGlobal": "true",
+  "bin": {
+    "swagger-validator": "./schema-validation.js"
+  },
+  "dependencies": {
+    "ajv": "^4.1.7",
+    "async": "^2.0.0",
+    "commander": "^2.9.0",
+    "fs-extra": "^0.30.0",
+    "package.json": "^2.0.1",
+    "string": "^3.3.1"
+  }
+}
