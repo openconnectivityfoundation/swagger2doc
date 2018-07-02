@@ -98,26 +98,29 @@ for (var path in jsonContent['paths']) {
         for (var result_code in method_data["responses"]) {
             console.log ("    ",result_code);
             var result_data = method_data["responses"][result_code];
-            var example_data = result_data["x-example"];
-            var schema_ref = result_data["schema"]["$ref"];
-            var schema_id = schema_ref.replace("#/definitions/","");
-            console.log ("      schema_id :",schema_id);
-            console.log ("      example   : ",example_data);
-            var schema_data = jsonContent["definitions"][schema_id]
-            //console.log ("      schema   : ",schema_data);
-            
-            let validate = ajv.compile(schema_data);
-            let valid = validate(example_data);
+            try {
+                var example_data = result_data["x-example"];
+                var schema_ref = result_data["schema"]["$ref"];
+                var schema_id = schema_ref.replace("#/definitions/","");
+                console.log ("      schema_id :",schema_id);
+                console.log ("      example   : ",example_data);
+                var schema_data = jsonContent["definitions"][schema_id]
+                //console.log ("      schema   : ",schema_data);
+                
+                let validate = ajv.compile(schema_data);
+                let valid = validate(example_data);
 
-            if (!valid) {
-                console.log('JSON not matching with Schema');
-                console.log(validate.errors);
-                console.log (" ")
-                console.log ("      schema   : ",schema_data);
+                if (!valid) {
+                    console.log('JSON not matching with Schema');
+                    console.log(validate.errors);
+                    console.log (" ")
+                    console.log ("      schema   : ",schema_data);
+                }
+                else {
+                    console.log('VALID');
+                }
             }
-            else {
-                console.log('VALID');
-            }
+            catch (err) {console.log('    schema or x-example does not exist');}
         }
     }
 }
