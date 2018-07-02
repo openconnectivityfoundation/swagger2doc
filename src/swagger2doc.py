@@ -35,24 +35,7 @@ from time import gmtime, strftime
 if sys.version_info < (3, 5):
     raise Exception("ERROR: Python 3.5 or more is required, you are currently running Python %d.%d!" %
                     (sys.version_info[0], sys.version_info[1]))
-#try:
-#    from swagger_spec_validator.validator20 import validate_spec
-#except:
-#    print("missing swagger_parser:")
-#    print ("Trying to Install required module: swagger_parser ")
-#    os.system('c:\python35\python.exe -m pip install swagger_spec_validator')
-#from swagger_spec_validator.validator20 import validate_spec
 
-#try:
-#    from swagger_parser import SwaggerParser
-#except:
-#    print("missing swagger_parser:")
-#    print ("Trying to Install required module: swagger_parser ")
-#    os.system('c:\python35\python.exe -m pip install swagger_parser')
-#from swagger_parser import SwaggerParser
-#
-# docx imports
-#
 try:
     from docx import Document
 except:
