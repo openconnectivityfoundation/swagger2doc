@@ -1,22 +1,30 @@
-************************
-*** swagger2doc (v1) ***
-************************
-usage: swagger2doc.py [-h] [-ver] [-swagger [SWAGGER]] [-schema [SCHEMA]]
-                      [-docx [DOCX]] [-word_out [WORD_OUT]]
-                      [-resource [RESOURCE]] [-schemadir [SCHEMADIR]]
+Collecting swagger_parser
+  Downloading https://files.pythonhosted.org/packages/86/59/7916d2a4793a597ab09be36b028b8bad22687264c9f2377f2cc1afd72763/swagger_parser-1.0.1-py2.py3-none-any.whl
+Requirement already satisfied: requests in c:\python36-32\lib\site-packages (from swagger_parser) (2.19.1)
+Requirement already satisfied: PyYAML>=3.11 in c:\python36-32\lib\site-packages (from swagger_parser) (3.12)
+Collecting swagger-spec-validator>=2.0.2 (from swagger_parser)
+  Downloading https://files.pythonhosted.org/packages/74/e4/0f945c923dcdb05f900426701b6d95810dc7e612045f778881dd490a38b7/swagger_spec_validator-2.3.1-py2.py3-none-any.whl
+Requirement already satisfied: jinja2>=2.8 in c:\python36-32\lib\site-packages (from swagger_parser) (2.8)
+Requirement already satisfied: certifi>=2017.4.17 in c:\python36-32\lib\site-packages (from requests->swagger_parser) (2018.4.16)
+Requirement already satisfied: chardet<3.1.0,>=3.0.2 in c:\python36-32\lib\site-packages (from requests->swagger_parser) (3.0.4)
+Requirement already satisfied: idna<2.8,>=2.5 in c:\python36-32\lib\site-packages (from requests->swagger_parser) (2.7)
+Requirement already satisfied: urllib3<1.24,>=1.21.1 in c:\python36-32\lib\site-packages (from requests->swagger_parser) (1.23)
+Requirement already satisfied: jsonschema in c:\python36-32\lib\site-packages (from swagger-spec-validator>=2.0.2->swagger_parser) (2.5.1)
+Requirement already satisfied: six in c:\python36-32\lib\site-packages (from swagger-spec-validator>=2.0.2->swagger_parser) (1.11.0)
+Requirement already satisfied: MarkupSafe in c:\python36-32\lib\site-packages (from jinja2>=2.8->swagger_parser) (1.0)
+Installing collected packages: swagger-spec-validator, swagger-parser
+Successfully installed swagger-parser-1.0.1 swagger-spec-validator-2.3.1
+missing swagger_parser:
+Trying to Install required module: swagger_parser 
+***************************
+*** swag-validator (v1) ***
+***************************
+usage: swag-validator.py [-h] [-ver] [-file [FILE]] [-schema [SCHEMA]]
 
 optional arguments:
   -h, --help            show this help message and exit
   -ver, --verbose       Execute in verbose mode
-  -swagger [SWAGGER], --swagger [SWAGGER]
+  -file [FILE], --file [FILE]
                         swagger file name
   -schema [SCHEMA], --schema [SCHEMA]
-                        schema to be added to word document
-  -docx [DOCX], --docx [DOCX]
-                        word file in
-  -word_out [WORD_OUT], --word_out [WORD_OUT]
-                        word file out
-  -resource [RESOURCE], --resource [RESOURCE]
-                        resource (path) to be put in the word document
-  -schemadir [SCHEMADIR], --schemadir [SCHEMADIR]
-                        path to dir with additional referenced schemas
+                        schema directory for the file
