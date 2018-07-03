@@ -6,8 +6,6 @@
 # option) any later version.  See http://www.gnu.org/copyleft/gpl.html for 
 # the full text of the license. 
 #
-# https://pypi.python.org/pypi/swagger-parser/
-#
 # TODO
 # 
 #
@@ -27,16 +25,6 @@ from time import gmtime, strftime
 from jsonschema import validate
 import jsonschema
 
- 
-
-#try: 
-#    from swagger_parser import SwaggerParser
-#except:
-#    print("missing swagger_parser:")
-#    print ("Trying to Install required module: swagger_parser ")
-#    os.system('python3 -m pip install swagger_parser')
-#from swagger_parser import SwaggerParser
- 
  
 if sys.version_info < (3, 5):
     raise Exception("ERROR: Python 3.5 or more is required, you are currently running Python %d.%d!" % (sys.version_info[0], sys.version_info[1]))
@@ -121,7 +109,6 @@ def printKeysOfDict(method_data, prefix ="    key :"):
 #
 #   main of script
 #
-
 print ("***************************")
 print ("*** swag-validator (v1) ***")
 print ("***************************")
