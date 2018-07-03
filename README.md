@@ -70,14 +70,15 @@ The x-example can occur:
 - as example of a reponse code
 
 note:
+
 some restrictions on the swagger input:
 - schema is a reference to a definition
 - the definition must be in the same file and does not have other references.
 
 good practice:
 - each payload definition needs to have:
- - schema
- - x-example
+  - schema
+  - x-example
 
 
 The validation is done by means of json schema (draft 4) validation.
