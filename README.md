@@ -69,8 +69,7 @@ The x-example can occur:
 - in the body of an put/post/patch
 - as example of a reponse code
 
-note:
-
+NOTE:
 some restrictions on the swagger input:
 - schema is a reference to a definition
 - the definition must be in the same file and does not have other references.
