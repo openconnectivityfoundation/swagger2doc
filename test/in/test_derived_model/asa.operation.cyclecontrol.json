@@ -1,0 +1,68 @@
+{
+  "id": "http://openinterconnect.org/asamapping/schemas/asa.operation.cyclecontrol.json#",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description" : "Copyright (c) 2017 Open Connectivity Foundation, Inc. All rights reserved.",
+  "title": "Cycle Control",
+  "definitions": {
+    "asa.operation.cyclecontrol": {
+      "type": "object",
+      "properties": {
+        "operationalstate": {
+          "type": "integer",
+          "description": "Current operational state of the appliance",
+          "x-ocf-conversion": {
+            "x-ocf-alias": "oic.r.operationalstate",
+            "x-to-ocf": [
+              "statearray = [Idle,Working,ReadyToStart,DelayedStart,Pause,EndOfCycle]",
+              "currentmachinestate = statearray[operationalstate]"
+            ],
+            "x-from-ocf": [
+              "statearray = [Idle,Working,ReadyToStart,DelayedStart,Pause,EndOfCycle]",
+              "operationalstate = indexof statearray[currentmachinestate[0]]"
+            ]
+          }
+        },
+        "supportedoperationalstates": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Array of operational states supported by the Appliance.",
+          "x-ocf-conversion": {
+            "x-ocf-alias": "oic.r.operationalstate",
+            "x-to-ocf": [
+              "statearray = [Idle,Working,ReadyToStart,DelayedStart,Pause,EndOfCycle]",
+              "for x=0, x < sizeof(supportedoperationalstates): machinestates[x] = statearray[supportedoperationalstates[x]]"
+            ],
+            "x-from-ocf": [
+              "statearray = [Idle,Working,ReadyToStart,DelayedStart,Pause,EndOfCycle]",
+              "for x=0, x < sizeof(machinestates): supportedoperationalstates[x] = indexof statearray[machinestates[x]]"
+            ]
+          }
+        },
+        "SupportedOperationalcommands": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Array of operatinal commands supported by the appliance",
+          "x-ocf-conversion": {
+            "x-ocf-alias": "oic.r.action"
+          }
+        },
+        "executeoperationalcomand": {
+          "x-ocf-type": "method",
+          "description": "Execute an operational command",
+          "x-ocf-conversion": {
+            "x-ocf-alias": "oic.r.action"
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "allOf": [
+    {"$ref": "#/definitions/asa.operation.cyclecontrol"}
+  ],
+  "required": [ "operationalstate","supportedoperationalstates" ]
+}

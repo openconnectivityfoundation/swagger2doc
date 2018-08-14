@@ -426,37 +426,38 @@ class CreateWordDoc(object):
         if mydef is not None:
             for object_name, json_object in mydef.items():
                 print ("handling object:", object_name)
-                property_list = find_key_link(json_object, 'properties')
-                required_props = find_key_link(json_object, 'required')
+                if object_name == resource_name:
+                    property_list = find_key_link(json_object, 'properties')
+                    required_props = find_key_link(json_object, 'required')
 
-                if property_list is not None:
-                    for prop in property_list:
-                        # fill the table
-                        try:
-                            if isinstance(property_list, dict):
-                                if isinstance(property_list[prop], dict):
-                                    print ("parse_schema: property:", prop)
-                                    description_text = property_list[prop].get('description', "")
-                                    ocf_resource = to_ocf = from_ocf = ""
-                                    my_dict = property_list[prop].get("x-ocf-conversion")
-                                    if my_dict is not None:
-                                        ocf_resource = my_dict.get('x-ocf-alias', "")
-                                        to_ocf = my_dict.get('x-to-ocf', "")
-                                        from_ocf = my_dict.get('x-from-ocf', "")
+                    if property_list is not None:
+                        for prop in property_list:
+                            # fill the table
+                            try:
+                                if isinstance(property_list, dict):
+                                    if isinstance(property_list[prop], dict):
+                                        print ("parse_schema: property:", prop)
+                                        description_text = property_list[prop].get('description', "")
+                                        ocf_resource = to_ocf = from_ocf = ""
+                                        my_dict = property_list[prop].get("x-ocf-conversion")
+                                        if my_dict is not None:
+                                            ocf_resource = my_dict.get('x-ocf-alias', "")
+                                            to_ocf = my_dict.get('x-to-ocf', "")
+                                            from_ocf = my_dict.get('x-from-ocf', "")
 
-                                    row_cells = self.tableAttribute.add_row().cells
-                                    row_cells[0].text = str(prop)
-                                    row_cells[1].text = str(ocf_resource)
-                                    row_cells[2].text = self.list_to_string(to_ocf)
-                                    row_cells[3].text = self.list_to_string(from_ocf)
-                                    #row_cells[4].text = description_text
+                                        row_cells = self.tableAttribute.add_row().cells
+                                        row_cells[0].text = str(prop)
+                                        row_cells[1].text = str(ocf_resource)
+                                        row_cells[2].text = self.list_to_string(to_ocf)
+                                        row_cells[3].text = self.list_to_string(from_ocf)
+                                        #row_cells[4].text = description_text
+                                    else:
+                                        print ("list_properties_derived : not handled:", prop, properties[prop])
                                 else:
                                     print ("list_properties_derived : not handled:", prop, properties[prop])
-                            else:
-                                print ("list_properties_derived : not handled:", prop, properties[prop])
-                        except:
-                            traceback.print_exc()
-                            pass
+                            except:
+                                traceback.print_exc()
+                                pass
 
 
     def list_properties_derived_table(self, parse_tree, resource_name):
@@ -468,39 +469,40 @@ class CreateWordDoc(object):
         mydef = find_key_link(parse_tree, 'definitions')
         if mydef is not None:
             for object_name, json_object in mydef.items():
-                print ("handling object:", object_name)
-                property_list = find_key_link(json_object, 'properties')
-                required_props = find_key_link(json_object, 'required')
-                if required_props is None:
-                    required_props = find_key_link(parse_tree, 'required')
-                print ("list_properties_derived_table required properties:", required_props)
-                if required_props is None:
-                    required_props = []
+                if object_name == resource_name:
+                    print ("handling object:", object_name)
+                    property_list = find_key_link(json_object, 'properties')
+                    required_props = find_key_link(json_object, 'required')
+                    if required_props is None:
+                        required_props = find_key_link(parse_tree, 'required')
+                    print ("list_properties_derived_table required properties:", required_props)
+                    if required_props is None:
+                        required_props = []
 
-                if property_list is not None:
-                    for prop in property_list:
-                        # fill the table
-                        try:
-                            if isinstance(property_list, dict):
-                                if isinstance(property_list[prop], dict):
-                                    print ("parse_schema: property:", prop)
-                                    description_text = property_list[prop].get('description', "")
-                                    type_text = property_list[prop].get('type', "")
-                                    row_cells = self.tableAttribute.add_row().cells
-                                    row_cells[0].text = str(prop)
-                                    row_cells[1].text = type_text
-                                    if prop in required_props:
-                                        row_cells[2].text = "yes"
+                    if property_list is not None:
+                        for prop in property_list:
+                            # fill the table
+                            try:
+                                if isinstance(property_list, dict):
+                                    if isinstance(property_list[prop], dict):
+                                        print ("parse_schema: property:", prop)
+                                        description_text = property_list[prop].get('description', "")
+                                        type_text = property_list[prop].get('type', "")
+                                        row_cells = self.tableAttribute.add_row().cells
+                                        row_cells[0].text = str(prop)
+                                        row_cells[1].text = type_text
+                                        if prop in required_props:
+                                            row_cells[2].text = "yes"
+                                        else:
+                                            row_cells[2].text = "no"
+                                        row_cells[3].text = description_text
                                     else:
-                                        row_cells[2].text = "no"
-                                    row_cells[3].text = description_text
+                                        print ("list_properties_derived : not handled:", prop, properties[prop])
                                 else:
                                     print ("list_properties_derived : not handled:", prop, properties[prop])
-                            else:
-                                print ("list_properties_derived : not handled:", prop, properties[prop])
-                        except:
-                            traceback.print_exc()
-                            pass
+                            except:
+                                traceback.print_exc()
+                                pass
                             
                             
     def list_attributes(self, parse_tree, resource_name=None):
@@ -541,13 +543,6 @@ class CreateWordDoc(object):
             row_cells[3].text = "Read Only"
             row_cells[4].text = "True = Sensed, False = Not Sensed."
 
-        #if self.schema_switch is True:
-        #    # add values from external schema.
-        #    for schema_file in self.schema_files:
-        #        linestring = open(schema_file, 'r').read()
-        #        # add fields in table with contents..
-        #        self.parse_schema(linestring)
-
     def list_attributes_derived(self, parse_tree, select_resource=None):
 
         """
@@ -569,7 +564,6 @@ class CreateWordDoc(object):
         hdr_cells[1].text = 'OCF Resource'
         hdr_cells[2].text = 'To OCF'
         hdr_cells[3].text = 'From OCF'
-        #hdr_cells[4].text = 'Description'
         level = 1
         if select_resource is None:
             pass
@@ -630,14 +624,6 @@ class CreateWordDoc(object):
         :param resource_name:
         """
         title_name = find_key_link(parse_tree, 'title')
-        # TODO: we do not have an display name...
-        #if section_name is not None:
-        #    title_name = section_name
-            #display_name = self.get_display_name_resources(parse_tree, section_name)
-            #self.displayName = display_name
-            #print ("DisplayName:", display_name)
-            #if display_name is not None:
-            #    title_name = display_name
         print ("Title:", title_name)
         self.title = title_name
         par = self.document.add_heading(title_name, level=2)
@@ -706,8 +692,9 @@ class CreateWordDoc(object):
             for def_name, def_data in parse_tree["definitions"].items():
                 print ("derived model name (defintions):",def_name)
                 if def_name is not None:
-                    text = "The derived model: " + str(def_name) + "."
-                    self.document.add_paragraph(text)
+                    text = "The derived model: " + str(def_name) + ". "
+                    description_text = def_data.get('description', "")
+                    self.document.add_paragraph(text + description_text)
             par = self.document.add_heading('Property Definition', level=3)
             for def_name, def_data in parse_tree["definitions"].items():
                 print ("derived model name (table):",def_name)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PYTHON_EXE=C:\\python35-32\\python3.exe
+PYTHON_EXE=python3.exe
 RAML2DOC=../src/swagger2doc.py
 
 OUTPUT_DIR=./out
