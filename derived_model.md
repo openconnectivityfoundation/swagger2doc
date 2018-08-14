@@ -13,12 +13,16 @@ typical input:
 python3 -docx <word file> --derived <derived eco system name> -swagger <json schema of the derived model> -word_out <word output file>
 
 - -docx  <>
+
     input word file: start of the word file
 - -derived <>
+
     name of the derived eco system: for example: Alljoyn
 - -swagger <>
+
     name of the json derived model name, this is ONLY the json definition
 - -word_out <>
+
     word file with the appended data
     
     
