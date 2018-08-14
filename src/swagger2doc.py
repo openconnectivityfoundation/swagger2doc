@@ -701,7 +701,10 @@ class CreateWordDoc(object):
                 self.list_attributes_derived(parse_tree, select_resource=def_name)
 
         # section Swagger definition
-        par = self.document.add_heading('Swagger2.0 Definition', level=3)
+        if resource_name is not None:
+            par = self.document.add_heading('Swagger2.0 Definition', level=3)
+        else:
+            par = self.document.add_heading('Derived Model Definition', level=3)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
 
