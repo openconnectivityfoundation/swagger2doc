@@ -27,6 +27,13 @@ mkdir -p $OUTPUT_DIR
 outfile="outfile.txt"
 echo "" > $OUTPUT_DIR/$outfile
 cp ../input/ResourceTemplate.docx $OUTPUT_DIR/$outfile.docx
+if [ -z "$4" ]
+then
+      echo "using default word file"
+else
+      echo "using $4 as word file"
+      cp $4 $OUTPUT_DIR/$outfile.docx
+fi
 
 for file in $IN_DIR/*.json
 do
