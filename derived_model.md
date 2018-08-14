@@ -27,6 +27,32 @@ python3 -docx <word file> --derived <derived eco system name> -swagger <json sch
 
     word file with the appended data
     
+# folder processing
+
+In the folder test there is a script that can process multiple files in a folder.
+The script is called ```derive_folder.sh```
+
+typical usage:
+```
+ sh derive_folder.sh <input folder> <output folder> <eco system> <input word file>
+```
+
+- input folder
+
+    folder where the json files recides.
+    
+- output folder
+
+    folder to be used to generate the output tool
+    
+- eco system name   
+
+    name to be used in the tables
+    
+- input word file
+
+    optional, word file that is used to append the sections too. input file is NOT changed.
+
     
 # example of derived model in json schema format
 
