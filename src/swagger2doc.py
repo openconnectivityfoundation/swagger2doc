@@ -422,9 +422,9 @@ class CreateWordDoc(object):
         :param parse_tree:
         :param resource_name:
         """
-        definitions = find_key_link(parse_tree, 'definitions')
-        if defintions is not None:
-            for object_name, json_object in definitions.items():
+        mydef = find_key_link(parse_tree, 'definitions')
+        if mydef is not None:
+            for object_name, json_object in mydef.items():
                 print ("handling object:", object_name)
                 property_list = find_key_link(json_object, 'properties')
                 required_props = find_key_link(json_object, 'required')
@@ -449,7 +449,7 @@ class CreateWordDoc(object):
                                     row_cells[1].text = str(ocf_resource)
                                     row_cells[2].text = self.list_to_string(to_ocf)
                                     row_cells[3].text = self.list_to_string(from_ocf)
-                                    row_cells[4].text = description_text
+                                    #row_cells[4].text = description_text
                                 else:
                                     print ("list_properties_derived : not handled:", prop, properties[prop])
                             else:
@@ -459,6 +459,50 @@ class CreateWordDoc(object):
                             pass
 
 
+    def list_properties_derived_table(self, parse_tree, resource_name):
+        """
+
+        :param parse_tree:
+        :param resource_name:
+        """
+        mydef = find_key_link(parse_tree, 'definitions')
+        if mydef is not None:
+            for object_name, json_object in mydef.items():
+                print ("handling object:", object_name)
+                property_list = find_key_link(json_object, 'properties')
+                required_props = find_key_link(json_object, 'required')
+                if required_props is None:
+                    required_props = find_key_link(parse_tree, 'required')
+                print ("list_properties_derived_table required properties:", required_props)
+                if required_props is None:
+                    required_props = []
+
+                if property_list is not None:
+                    for prop in property_list:
+                        # fill the table
+                        try:
+                            if isinstance(property_list, dict):
+                                if isinstance(property_list[prop], dict):
+                                    print ("parse_schema: property:", prop)
+                                    description_text = property_list[prop].get('description', "")
+                                    type_text = property_list[prop].get('type', "")
+                                    row_cells = self.tableAttribute.add_row().cells
+                                    row_cells[0].text = str(prop)
+                                    row_cells[1].text = type_text
+                                    if prop in required_props:
+                                        row_cells[2].text = "yes"
+                                    else:
+                                        row_cells[2].text = "no"
+                                    row_cells[3].text = description_text
+                                else:
+                                    print ("list_properties_derived : not handled:", prop, properties[prop])
+                            else:
+                                print ("list_properties_derived : not handled:", prop, properties[prop])
+                        except:
+                            traceback.print_exc()
+                            pass
+                            
+                            
     def list_attributes(self, parse_tree, resource_name=None):
         """
         list all properties (attributes) in an table.
@@ -516,21 +560,39 @@ class CreateWordDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" The derived properties")
+        paragraph.add_run(" The property mapping for "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table        
-        self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
+        self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
         hdr_cells[1].text = 'OCF Resource'
         hdr_cells[2].text = 'To OCF'
         hdr_cells[3].text = 'From OCF'
-        hdr_cells[4].text = 'Description'
+        #hdr_cells[4].text = 'Description'
         level = 1
         if select_resource is None:
             pass
         else:
             self.list_properties_derived(parse_tree, select_resource )
+            
+        # create the caption
+        paragraph = self.document.add_paragraph('Table ', style='Caption')
+        Table (paragraph)
+        paragraph.add_run(" The properties of "+select_resource+".")
+        paragraph.style = 'TABLE-title'
+        # create the table        
+        self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
+        hdr_cells = self.tableAttribute.rows[0].cells
+        hdr_cells[0].text = str(self.derived_name) + ' Property name'
+        hdr_cells[1].text = 'Type'
+        hdr_cells[2].text = 'Required'
+        hdr_cells[3].text = 'Description'
+        level = 1
+        if select_resource is None:
+            pass
+        else:
+            self.list_properties_derived_table(parse_tree, select_resource )
 
     def get_value_by_path_name(self, parse_tree, path_name, target):
         """
@@ -576,48 +638,80 @@ class CreateWordDoc(object):
             #print ("DisplayName:", display_name)
             #if display_name is not None:
             #    title_name = display_name
-        print ("Title", title_name)
+        print ("Title:", title_name)
         self.title = title_name
-
-        rt_name = self.get_value_by_path_name(parse_tree, resource_name, "rt")
-        print ("RT = ", rt_name)
-
-        # section Resource name
         par = self.document.add_heading(title_name, level=2)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading1'
-        # section introduction
-        par = self.document.add_heading('Introduction', level=3)
-        if self.annex_switch is True:
-            par.style = 'ANNEX-heading2'
-        description_value = self.get_value_by_path_name2(parse_tree, resource_name, "get", "description")
+
+        if resource_name is not None:
+            rt_name = self.get_value_by_path_name(parse_tree, resource_name, "rt")
+        else:
+            # todo fix this
+            rt_name = ""
+        print ("RT   : `", rt_name, "`")
+
+        # section Resource name (Introduction)
+        if resource_name is not None:
+            description_value = self.get_value_by_path_name2(parse_tree, resource_name, "get", "description")
+        else:
+            # TODO: fix this
+            description_value = ""
         print ("description:", description_value)
         new_text = self.swag_unsanitize_description(description_value)
-        print ("sanitzied text:", new_text)
-        par_text = self.document.add_paragraph(new_text)
-        par_text.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        #self.document.add_paragraph(value)
+        print ("sanitized text:", new_text)
+        if new_text != "":
+            # add text + heading
+            
+            # section introduction
+            par = self.document.add_heading('Introduction', level=3)
+            if self.annex_switch is True:
+                par.style = 'ANNEX-heading2'
+            par_text = self.document.add_paragraph(new_text)
+            par_text.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            #self.document.add_paragraph(value)
 
         # section URI
-        if self.annex_switch is False:
-            par = self.document.add_heading('Example URI', level=3)
+        if resource_name is not None:
+            url_without_query= str(resource_name).split('?')[0]
         else:
-            par = self.document.add_heading('Wellknown URI', level=3)
-        if self.annex_switch is True:
-            par.style = 'ANNEX-heading2'
-        #self.list_URIs(parse_tree, select_resource=resource_name)
-        url_without_query= str(resource_name).split('?')[0]
-        self.document.add_paragraph("/"+str(url_without_query))
+            # TODO: fix this 
+            url_without_query = ""
+        if url_without_query != "":
+            # write the data
+            if self.annex_switch is False:
+                par = self.document.add_heading('Example URI', level=3)
+            else:
+                par = self.document.add_heading('Wellknown URI', level=3)
+            if self.annex_switch is True:
+                par.style = 'ANNEX-heading2'
+            self.document.add_paragraph("/"+str(url_without_query))
 
         # section RT
-        par = self.document.add_heading('Resource Type', level=3)
-        if self.annex_switch is True:
-            par.style = 'ANNEX-heading2'
-        if rt_name is not None:
-            text = "The resource type (rt) is defined as: " + str(rt_name) + "."
-            self.document.add_paragraph(text)
+        if resource_name is not None:
+            par = self.document.add_heading('Resource Type', level=3)
+            if self.annex_switch is True:
+                par.style = 'ANNEX-heading2'
+            if rt_name is not None:
+                text = "The resource type (rt) is defined as: " + str(rt_name) + "."
+                self.document.add_paragraph(text)
+            else:
+                print ("RT not found!")
         else:
-            print ("RT not found!")
+            # derived model
+            # list all definitions
+            par = self.document.add_heading('Derived Model', level=3)
+            if self.annex_switch is True:
+                par.style = 'ANNEX-heading2'
+            for def_name, def_data in parse_tree["definitions"].items():
+                print ("derived model name (defintions):",def_name)
+                if def_name is not None:
+                    text = "The derived model: " + str(def_name) + "."
+                    self.document.add_paragraph(text)
+            par = self.document.add_heading('Property Definition', level=3)
+            for def_name, def_data in parse_tree["definitions"].items():
+                print ("derived model name (table):",def_name)
+                self.list_attributes_derived(parse_tree, select_resource=def_name)
 
         # section Swagger definition
         par = self.document.add_heading('Swagger2.0 Definition', level=3)
@@ -636,19 +730,18 @@ class CreateWordDoc(object):
         if self.composite_switch is False:
             # do not add when the switch is true...
             # section property definition
-            par = self.document.add_heading('Property Definition', level=3)
-            if self.annex_switch is True:
-                par.style = 'ANNEX-heading2'
-            if self.derived_name is not None:
-                self.list_attributes_derived(parse_tree, select_resource=resource_name)
-            else:
+            if resource_name is not None:
+                par = self.document.add_heading('Property Definition', level=3)
+                if self.annex_switch is True:
+                    par.style = 'ANNEX-heading2'
                 self.list_attributes(parse_tree, resource_name=resource_name)
 
         # section CRUDN definition
         par = self.document.add_heading('CRUDN behaviour', level=3)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
-        self.list_resources_crudn(parse_tree, resource_name=resource_name)
+        if resource_name is not None:
+            self.list_resources_crudn(parse_tree, resource_name=resource_name)
 
         if self.schema_switch is True:
             # section extra JSON definition
@@ -792,6 +885,6 @@ try:
 
     print (swagger_parser)
 except:
-    print ("error in ", args.swagger)
+    #print ("error in ", args.swagger)
     traceback.print_exc()
-    pass
+    #pass
