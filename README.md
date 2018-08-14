@@ -17,7 +17,7 @@ This tool is python3 based.
 and use the tool relative of where the respository is located on your system.
 
 
-## usage
+## usage (resources)
 from the src directory:
 
 ```python3 swagger2doc.py <options>```
@@ -53,6 +53,12 @@ optional arguments:
                         (--annex true)
 
 ```
+
+### usage derived models
+
+see https://github.com/openconnectivityfoundation/swagger2doc/blob/master/derived_model.md
+
+
 ## enhancements
 
 1.0.1 :

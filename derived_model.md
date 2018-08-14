@@ -2,15 +2,17 @@
 
 swagger2doc tool
 
-## description
-This tool creates the documentation for an OCF resource in a supplied word document.
-The tools needs to be called for each resource that needs to be added to the word document.
+This tool creates the documentation for an OCF derived model resource in a supplied word document.
+The tools needs to be called for each derived model that needs to be added to the word document.
 
-# derived model usage
+The calling order is specific for each document.
 
-typical input:
+# Derived Model input parameters
 
+Typical input:
+```
 python3 -docx <word file> --derived <derived eco system name> -swagger <json schema of the derived model> -word_out <word output file>
+```
 
 - -docx  <>
 
