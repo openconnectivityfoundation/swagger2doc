@@ -26,29 +26,32 @@ python3 -docx <word file> --derived <derived eco system name> -swagger <json sch
     word file with the appended data
     
     
-# example derived model with annotation
+# example of derived model in json schema format
+
+<-- annotation of what is needed/interpreted by the tooling.
 
 ```
 {
   "id": "http://openinterconnect.org/asamapping/schemas/asa.environment.currentairquality.json#",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description" : "Copyright (c) 2018 Open Connectivity Foundation, Inc. All rights reserved.",
-  "title": "my derived model name",                                                                     <-- name of the section
+  "title": "my derived model name",                                                        <-- name of the section
   "definitions": {
-    "my_derived_model_1": {                                                                             <-- name of the derived type
+    "my_derived_model_1": {                                                                <-- name of the derived type
       "description" : "the my_derived_model_1 description (single line)",
       "properties": {
-        "prop1": {                                                                                      <-- property name of the derived eco system
-          "type": "integer",                                                                            <-- type of the property 
-          "description": "prop1 description",                                                           <-- description of the property
+        "prop1": {                                                                         <-- property name of the derived eco system
+          "type": "integer",                                                               <-- type of the property 
+          "description": "prop1 description",                                              <-- description of the property
           "x-ocf-conversion": {
-            "x-ocf-alias": "oic.r.airquality",                                                          <-- ocf resource type mapping
-            "x-to-ocf": [                                                                               <-- rule to ocf
+            "x-ocf-alias": "oic.r.airquality",                                             <-- ocf resource type mapping
+            "x-to-ocf": [                                                                  <-- rule to ocf (string array)
               "valuetype = Measured",
               "contaminanttypearray = [CH2O,CO2,CO,PM2_5,PM10,VOC]",
               "ocf.contaminanttype = contaminanttypearray[contaminanttype]"
             ],
-            "x-from-ocf": [                                                                             <-- rule from ocf
+            "x-from-ocf": [                                                                <-- rule from ocf (string array)
+              "valuetype = Measured",
               "contaminanttype = indexof contaminanttypearray[ocf.contaminanttype]"
             ]
           }
@@ -69,7 +72,7 @@ python3 -docx <word file> --derived <derived eco system name> -swagger <json sch
       }
     },
     
-    "my_derived_model_2": {                                                                            <-- name of the 2nd derived type
+    "my_derived_model_2": {                                                                <-- name of the 2nd derived type
       "description" : "the my_derived_model2 description\n line2",
       "type": "object",
       "properties": {
@@ -111,6 +114,6 @@ python3 -docx <word file> --derived <derived eco system name> -swagger <json sch
     {"$ref": "#/definitions/my_derived_model_1"},
     {"$ref": "#/definitions/my_derived_model_2"}
   ],
-  "required": ["prop1", "yyy"]                                                                       <-- required properties 
+  "required": ["prop1", "yyy"]                                                             <-- required properties 
 }
 ```
