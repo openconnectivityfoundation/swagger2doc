@@ -11,8 +11,11 @@ The tools needs to be called for each resource that needs to be added to the wor
 ## installation
 This tool is python3 based.
 
+install with ```curl https://openconnectivityfoundation.github.io/swagger2doc/install.sh | bash``` 
+
+which executes the following steps:
 - clone git repo
-- Run the install script for python 3.5 dependencies (in src) with python3.5 :
+- execute the install script for python 3.5 dependencies (located in the src folder) with python3.5 :
     - pip3 install -r requirements-3.5.txt
 and use the tool relative of where the respository is located on your system.
 
