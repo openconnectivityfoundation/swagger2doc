@@ -726,29 +726,30 @@ class CreateWordDoc(object):
                     par.style = 'ANNEX-heading2'
                 self.list_attributes(parse_tree, resource_name=resource_name)
 
-        # section CRUDN definition
-        par = self.document.add_heading('CRUDN behaviour', level=3)
-        if self.annex_switch is True:
-            par.style = 'ANNEX-heading2'
         if resource_name is not None:
-            self.list_resources_crudn(parse_tree, resource_name=resource_name)
-
-        if self.schema_switch is True:
-            # section extra JSON definition
-            par = self.document.add_heading('Referenced JSON schemas', level=3)
+            # section CRUDN definition
+            par = self.document.add_heading('CRUDN behaviour', level=3)
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
+            if resource_name is not None:
+                self.list_resources_crudn(parse_tree, resource_name=resource_name)
 
-            for my_schema_file in self.schema_files:
-                par = self.document.add_heading(my_schema_file, level=4)
+            if self.schema_switch is True:
+                # section extra JSON definition
+                par = self.document.add_heading('Referenced JSON schemas', level=3)
                 if self.annex_switch is True:
                     par.style = 'ANNEX-heading2'
-                schema_text = open(my_schema_file, 'r').read()
-                try:
-                    par = self.document.add_paragraph(self.add_justification("", schema_text), style='CODE-BLACK')
-                    par.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                except:
-                    pass
+
+                for my_schema_file in self.schema_files:
+                    par = self.document.add_heading(my_schema_file, level=4)
+                    if self.annex_switch is True:
+                        par.style = 'ANNEX-heading2'
+                    schema_text = open(my_schema_file, 'r').read()
+                    try:
+                        par = self.document.add_paragraph(self.add_justification("", schema_text), style='CODE-BLACK')
+                        par.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                    except:
+                        pass
 
         if self.schemaWT_switch is True:
             # section extra JSON definition
