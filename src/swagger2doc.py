@@ -343,7 +343,7 @@ class CreateWordDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" The CRUDN operations of the resource with type 'rt' = "+resource_name)
+        paragraph.add_run("The CRUDN operations of the resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
 
         # create the table
@@ -516,7 +516,7 @@ class CreateWordDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" The properties definitions of the resource with type 'rt' = "+resource_name)
+        paragraph.add_run("The properties definitions of the resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
@@ -555,7 +555,7 @@ class CreateWordDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" The property mapping for "+select_resource+".")
+        paragraph.add_run("The property mapping for "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table        
         self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
@@ -573,7 +573,7 @@ class CreateWordDoc(object):
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         Table (paragraph)
-        paragraph.add_run(" The properties of "+select_resource+".")
+        paragraph.add_run("The properties of "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table        
         self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
@@ -675,7 +675,7 @@ class CreateWordDoc(object):
 
         # section RT
         if resource_name is not None:
-            par = self.document.add_heading('Resource Type', level=3)
+            par = self.document.add_heading('Resource type', level=3)
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
             if rt_name is not None:
@@ -686,7 +686,7 @@ class CreateWordDoc(object):
         else:
             # derived model
             # list all definitions
-            par = self.document.add_heading('Derived Model', level=3)
+            par = self.document.add_heading('Derived model', level=3)
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
             for def_name, def_data in parse_tree["definitions"].items():
@@ -695,16 +695,16 @@ class CreateWordDoc(object):
                     text = "The derived model: " + str(def_name) + ". "
                     description_text = def_data.get('description', "")
                     self.document.add_paragraph(text + description_text)
-            par = self.document.add_heading('Property Definition', level=3)
+            par = self.document.add_heading('Property definition', level=3)
             for def_name, def_data in parse_tree["definitions"].items():
                 print ("derived model name (table):",def_name)
                 self.list_attributes_derived(parse_tree, select_resource=def_name)
 
         # section Swagger definition
         if resource_name is not None:
-            par = self.document.add_heading('Swagger2.0 Definition', level=3)
+            par = self.document.add_heading('Swagger 2.0 definition', level=3)
         else:
-            par = self.document.add_heading('Derived Model Definition', level=3)
+            par = self.document.add_heading('Derived model definition', level=3)
         if self.annex_switch is True:
             par.style = 'ANNEX-heading2'
 
@@ -721,7 +721,7 @@ class CreateWordDoc(object):
             # do not add when the switch is true...
             # section property definition
             if resource_name is not None:
-                par = self.document.add_heading('Property Definition', level=3)
+                par = self.document.add_heading('Property definition', level=3)
                 if self.annex_switch is True:
                     par.style = 'ANNEX-heading2'
                 self.list_attributes(parse_tree, resource_name=resource_name)
@@ -762,7 +762,7 @@ class CreateWordDoc(object):
                 if self.annex_switch is True:
                     par.style = 'ANNEX-heading2'
 
-                par = self.document.add_heading("Property Definition", level=5)
+                par = self.document.add_heading("Property definition", level=5)
                 if self.annex_switch is True:
                     par.style = 'ANNEX-heading2'
 
@@ -771,7 +771,7 @@ class CreateWordDoc(object):
                 # create the caption
                 paragraph = self.document.add_paragraph('Table ', style='Caption')
                 Table (paragraph)
-                paragraph.add_run(" The properties definitions of schema file "+schema_file)
+                paragraph.add_run("The properties definitions of schema file "+schema_file)
                 paragraph.style = 'TABLE-title'
                 
                 # create the table
@@ -786,7 +786,7 @@ class CreateWordDoc(object):
 
                 # add fields in table with contents..
                 self.parse_schema(schema_text)
-                par = self.document.add_heading("Schema Definition", level=5)
+                par = self.document.add_heading("Schema definition", level=5)
                 if self.annex_switch is True:
                     par.style = 'ANNEX-heading2'
                 try:
