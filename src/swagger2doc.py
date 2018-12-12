@@ -48,6 +48,10 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 
+TABLESTYLE='TABLE-A'
+TABLESTYLE='LightShading-Accent1'
+
+
 # see https://github.com/python-openxml/python-docx/issues/359
 
 def MarkIndexEntry(entry,paragraph):
@@ -347,7 +351,11 @@ class CreateWordDoc(object):
         paragraph.style = 'TABLE-title'
 
         # create the table
-        self.table = self.document.add_table(rows=1, cols=6, style='TABLE-A')
+        self.table = self.document.add_table(rows=1, cols=6)
+        try:
+            self.table.style = TABLESTYLE
+        except:
+            print ("no style set for table")
                 
         hdr_cells = self.table.rows[0].cells
         hdr_cells[0].text = 'Resource'
@@ -519,7 +527,13 @@ class CreateWordDoc(object):
         paragraph.add_run("The properties definitions of the resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
         # create the table
-        self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
+        self.tableAttribute = self.document.add_table(rows=1, cols=5)
+        try:
+            self.tableAttribute.style = TABLESTYLE
+        except:
+            print ("no style set for table")
+
+        #self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = 'Property name'
         hdr_cells[1].text = 'Value type'
@@ -558,7 +572,12 @@ class CreateWordDoc(object):
         paragraph.add_run("The property mapping for "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table        
-        self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
+        #self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
+        self.tableAttribute = self.document.add_table(rows=1, cols=4)
+        try:
+            self.tableAttribute.style = TABLESTYLE
+        except:
+            print ("no style set for table")
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
         hdr_cells[1].text = 'OCF Resource'
@@ -576,7 +595,13 @@ class CreateWordDoc(object):
         paragraph.add_run("The properties of "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table        
-        self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
+        #self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
+        self.tableAttribute = self.document.add_table(rows=1, cols=4)
+        try:
+            self.tableAttribute.style = TABLESTYLE
+        except:
+            print ("no style set for table")
+            
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
         hdr_cells[1].text = 'Type'
@@ -775,7 +800,12 @@ class CreateWordDoc(object):
                 paragraph.style = 'TABLE-title'
                 
                 # create the table
-                self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
+                #self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
+                self.tableAttribute = self.document.add_table(rows=1, cols=5)
+                try:
+                    self.tableAttribute.style = TABLESTYLE
+                except:
+                    print ("no style set for table")
 
                 hdr_cells = self.tableAttribute.rows[0].cells
                 hdr_cells[0].text = 'Property name'
