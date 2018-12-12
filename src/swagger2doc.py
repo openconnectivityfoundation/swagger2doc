@@ -49,7 +49,7 @@ from docx.oxml.ns import qn
 
 
 TABLESTYLE='TABLE-A'
-TABLESTYLE='LightShading-Accent1'
+#TABLESTYLE='LightShading-Accent1'
 
 
 # see https://github.com/python-openxml/python-docx/issues/359
