@@ -44,6 +44,7 @@ except:
     os.system('c:\python35\python.exe -m pip install python-docx')
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
@@ -102,6 +103,19 @@ def Table(paragraph):
     fldChar.set(qn('w:fldCharType'), 'end')
     r.append(fldChar)
 
+    
+def Table_annex(paragraph):
+    run = run = paragraph.add_run()
+    r = run._r
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'begin')
+    r.append(fldChar)
+    instrText = OxmlElement('w:instrText')
+    instrText.text = ' SEQ Table \* ARABIC  \s 6'
+    r.append(instrText)
+    fldChar = OxmlElement('w:fldChar')
+    fldChar.set(qn('w:fldCharType'), 'end')
+    r.append(fldChar)
 
 def load_json_schema(filename, my_dir):
     """
@@ -284,7 +298,7 @@ class CreateWordDoc(object):
         for x in input_list:
             comma = ", "
             my_string = my_string + '"' + x + '"' + comma
-        # remove last comman (e.g. last 2 chars)
+        # remove last comma (e.g. last 2 chars)
         my_string = my_string[:-2]
         my_string += "]"
         return my_string
@@ -346,8 +360,11 @@ class CreateWordDoc(object):
         
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
-        Table (paragraph)
-        paragraph.add_run("The CRUDN operations of the resource with type 'rt' = "+resource_name)
+        if self.annex_switch is True:
+            Table_annex (paragraph)
+        else:
+            Table (paragraph)
+        paragraph.add_run(" The CRUDN operations of the resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
 
         # create the table
@@ -374,6 +391,7 @@ class CreateWordDoc(object):
         :param resource_name:
         """
         definitions = find_key_link(parse_tree, 'definitions')
+        self.tableAttribute.alignment = WD_TABLE_ALIGNMENT.LEFT
         if definitions is not None:
             for object_name, json_object in definitions.items():
                 print ("handling object:", object_name)
@@ -411,9 +429,14 @@ class CreateWordDoc(object):
                                     if read_only is None :
                                         # default value is false, see https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
                                         row_cells[3].text = "Read Write"
-                                    text_par = row_cells[4].add_paragraph(description_text)
-                                    text_par.alignment=WD_ALIGN_PARAGRAPH.LEFT
-                                    #row_cells[4].text = description_text
+                                    print (" ==>",description_text.strip())
+                                    text_formatted = row_cells[4].paragraphs[0].add_run(description_text)
+                                    text_formatted.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                                    print (" ==2>",description_text.strip())
+                                    #row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+                                    #txt_formatted = row_cells[4].text = description_text
+                                    #row_cells[4].paragraphs[0].WD_ALIGN_PARAGRAPH.LEFT
+                                    
                                 else:
                                     print ("list_properties : not handled:", prop, property_list[prop])
                             else:
@@ -523,8 +546,11 @@ class CreateWordDoc(object):
         
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
-        Table (paragraph)
-        paragraph.add_run("The properties definitions of the resource with type 'rt' = "+resource_name)
+        if self.annex_switch is True:
+            Table_annex (paragraph)
+        else:
+            Table (paragraph)
+        paragraph.add_run(" The properties definitions of the resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5)
@@ -568,11 +594,13 @@ class CreateWordDoc(object):
         
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
-        Table (paragraph)
-        paragraph.add_run("The property mapping for "+select_resource+".")
+        if self.annex_switch is True:
+            Table_annex (paragraph)
+        else:
+            Table (paragraph)
+        paragraph.add_run(" The property mapping for "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table        
-        #self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
         self.tableAttribute = self.document.add_table(rows=1, cols=4)
         try:
             self.tableAttribute.style = TABLESTYLE
@@ -591,11 +619,13 @@ class CreateWordDoc(object):
             
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
-        Table (paragraph)
-        paragraph.add_run("The properties of "+select_resource+".")
+        if self.annex_switch is True:
+            Table_annex (paragraph)
+        else:
+            Table (paragraph)
+        paragraph.add_run(" The properties of "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table        
-        #self.tableAttribute = self.document.add_table(rows=1, cols=4, style='TABLE-A')
         self.tableAttribute = self.document.add_table(rows=1, cols=4)
         try:
             self.tableAttribute.style = TABLESTYLE
@@ -795,8 +825,11 @@ class CreateWordDoc(object):
 
                 # create the caption
                 paragraph = self.document.add_paragraph('Table ', style='Caption')
-                Table (paragraph)
-                paragraph.add_run("The properties definitions of schema file "+schema_file)
+                if self.annex_switch is True:
+                    Table_annex (paragraph)
+                else:
+                    Table (paragraph)
+                paragraph.add_run(" The properties definitions of schema file "+schema_file)
                 paragraph.style = 'TABLE-title'
                 
                 # create the table
