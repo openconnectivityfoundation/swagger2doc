@@ -110,8 +110,13 @@ def Table_annex(paragraph):
     fldChar = OxmlElement('w:fldChar')
     fldChar.set(qn('w:fldCharType'), 'begin')
     r.append(fldChar)
+    
     instrText = OxmlElement('w:instrText')
-    instrText.text = ' SEQ Table \* ARABIC  \s 6'
+    instrText.text = ' STYLEREF 9 \s '
+    r.append(instrText)
+    #
+    instrText = OxmlElement('w:instrText')
+    instrText.text = ' SEQ Table Annex \* ARABIC  \s 9 '
     r.append(instrText)
     fldChar = OxmlElement('w:fldChar')
     fldChar.set(qn('w:fldCharType'), 'end')
@@ -364,7 +369,7 @@ class CreateWordDoc(object):
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" The CRUDN operations of the resource with type 'rt' = "+resource_name)
+        paragraph.add_run(" – The CRUDN operations of the resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
 
         # create the table
@@ -550,7 +555,7 @@ class CreateWordDoc(object):
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" The properties definitions of the resource with type 'rt' = "+resource_name)
+        paragraph.add_run(" – The properties definitions of the resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5)
@@ -598,7 +603,7 @@ class CreateWordDoc(object):
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" The property mapping for "+select_resource+".")
+        paragraph.add_run(" – The property mapping for "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table        
         self.tableAttribute = self.document.add_table(rows=1, cols=4)
