@@ -111,9 +111,9 @@ def Table_annex(paragraph):
     fldChar.set(qn('w:fldCharType'), 'begin')
     r.append(fldChar)
     
-    instrText = OxmlElement('w:instrText')
-    instrText.text = ' STYLEREF 9 \s '
-    r.append(instrText)
+    #instrText = OxmlElement('w:instrText')
+    #instrText.text = ' STYLEREF 9 \s '
+    #r.append(instrText)
     #
     instrText = OxmlElement('w:instrText')
     instrText.text = ' SEQ Table Annex \* ARABIC  \s 9 '
@@ -918,6 +918,7 @@ print("schemadir   : " + str(args.schemadir))
 print("docx        : " + str(args.docx))
 print("word_out    : " + str(args.word_out))
 print("derived     : " + str(args.derived))
+print("annex       : " + str(args.annex))
 print("")
 
 try:
