@@ -51,6 +51,7 @@ def find_key(rec_dict, target, depth=0):
         #else:
         #    print ("no dict:", rec_dict)
     except:
+        print("xxxxx")
         traceback.print_exc()
         
 def validate_with_ref(jsonfile, schema_data_reference, example_data):
@@ -93,9 +94,13 @@ def validate_body(json_dict, method, method_data):
                 example_data = param.get("x-example", None)
             except:
                 pass
+            if example_data is None:
+                return
+            if schema_file is None:
+                return
             print ("    validating body:")
-            print ("    schema file: ",schema_file)
-            print ("    example_data: ",example_data)
+            print ("      schema file: ",schema_file)
+            print ("      example_data: ",example_data)
             validate_with_ref (json_dict, schema_file, example_data )
     
 def printKeysOfDict(method_data, prefix ="    key :"):
@@ -147,19 +152,20 @@ for pathname, path in json_dict.get("paths").items() :
         
         # loop over all responses
         for response_name, responses in method_data["responses"].items():
-            schema_file = None
-            example_data = None
-            
-            try:           
+            try:
+                schema_file = None
+                example_data = None
+                
                 schema_file = responses.get("schema",None)
                 example_data = responses.get("x-example",None)
                 print ("  response : ", response_name)
                 print ("    schema file: ",schema_file)
                 print ("    example_data: ",example_data)
-                validate_with_ref(json_dict, schema_file, example_data )
+                if schema_file is not None:
+                  if example_data is not None:
+                    validate_with_ref(json_dict, schema_file, example_data )
             except:
                 pass
-       
-        
+print("done!")
 
 
