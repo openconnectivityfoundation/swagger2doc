@@ -66,6 +66,8 @@ def validate_with_ref(jsonfile, schema_data_reference, example_data):
             definitions_dict = jsonfile.get("definitions")
             #schema_data = find_key(definitions_dict, reference)
             schema_data = definitions_dict.get(reference)
+            resolve_ref(jsonfile, schema_data)
+            resolve_ref(jsonfile, schema_data)
             print ("  validate_with_ref : schema :", schema_data)
         except:
             print ("ERROR1: with ",schema_data_reference)
@@ -86,7 +88,34 @@ def validate_with_ref(jsonfile, schema_data_reference, example_data):
 def validate_data(schema_data, example_data):
     validate(example_data, schema_data)
         
-       
+def resolve_ref(json_data, ref_dict):
+    """
+    find key "target" in recursive dict
+    :param rec_dict: dict to search in, json schema dict, so it is combination of dict and arrays
+    :param target: target key to search for
+    :param depth: depth of the search (recursion)
+    :return:
+    """
+    try:
+        if isinstance(ref_dict, dict):
+            found=False
+            for key, value in ref_dict.items():
+                if key == "$ref":
+                    reference = value.replace('#/definitions/', '')
+                    new_data = json_data["definitions"][reference]
+                    found=True
+            if found == True:
+                print("resolve_ref: found $ref: ", value)
+                ref_dict.pop("$ref")
+                for key_n, value_n in new_data.items():
+                    ref_dict[key_n] = value_n
+            for key, value in ref_dict.items():
+                r = resolve_ref(json_data, value)
+    except:
+        print("resolve_ref")
+        traceback.print_exc()
+        
+        
 def validate_body(json_dict, method, method_data):
     params = method_data["parameters"]
     
@@ -125,7 +154,7 @@ def printKeysOfDict(method_data, prefix ="    key :"):
 #   main of script
 #
 print ("*****************************")
-print ("*** swag-validator (v1.1) ***")
+print ("*** swag-validator (v1.2) ***")
 print ("*****************************")
 parser = argparse.ArgumentParser()
 
