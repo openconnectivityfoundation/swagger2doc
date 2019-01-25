@@ -2,4 +2,5 @@
 
 python-docx
 jsonschema
+wget
 

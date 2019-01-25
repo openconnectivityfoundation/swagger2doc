@@ -24,6 +24,7 @@ from datetime import datetime
 from time import gmtime, strftime
 from jsonschema import validate
 import jsonschema
+import wget
 
  
 if sys.version_info < (3, 5):
@@ -100,12 +101,36 @@ def resolve_ref(json_data, ref_dict):
         if isinstance(ref_dict, dict):
             found=False
             for key, value in ref_dict.items():
+                # if $ref found, replace the whole content..
                 if key == "$ref":
-                    reference = value.replace('#/definitions/', '')
-                    new_data = json_data["definitions"][reference]
-                    found=True
+                    if value.startswith("#"):
+                        print("resolve_ref: found local $ref: ", value)
+                        reference = value.replace('#/definitions/', '')
+                        new_data = json_data["definitions"][reference]
+                        found=True
+                    if value.startswith("http"):
+                        print("resolve_ref: found external $ref: ", value)
+                        reference = value.split('#/definitions/')[1]
+                        url = value.split("#")[0]
+                        filename = "removeme_"+url[url.rfind("/")+1:]
+                        wget.download(url, filename)
+                        print("url: ", url)
+                        print("ref: ", reference)
+                        #print("downloaded file: ", filename)
+                        file_data = open(filename, 'r').read()
+                        #print("file data:", file_data)
+                        json_file = json.loads(file_data)
+                        try:
+                            os.remove(filename)
+                        except OSError:
+                            pass
+                        # note that this only works with a reference that is 1 deep.
+                        new_data = json_file["definitions"][reference]
+                        #print("new data:", new_data)
+                        found=True
+                    
             if found == True:
-                print("resolve_ref: found $ref: ", value)
+                print("resolve_ref: fixing $ref: ", value)
                 ref_dict.pop("$ref")
                 for key_n, value_n in new_data.items():
                     ref_dict[key_n] = value_n
@@ -154,7 +179,7 @@ def printKeysOfDict(method_data, prefix ="    key :"):
 #   main of script
 #
 print ("*****************************")
-print ("*** swag-validator (v1.2) ***")
+print ("*** swag-validator (v1.3) ***")
 print ("*****************************")
 parser = argparse.ArgumentParser()
 
