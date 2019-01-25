@@ -55,13 +55,21 @@ def find_key(rec_dict, target, depth=0):
         traceback.print_exc()
         
 def validate_with_ref(jsonfile, schema_data_reference, example_data):
+    schema_data = None
+    ref = None
     try:
-        #print ("  validate_with_ref : full ref :", schema_data_reference)
-        ref = schema_data_reference.get("$ref")
-        reference = ref.replace('#/definitions/', '')
-        print ("  validate_with_ref : ref :", reference)
-        schema_data = find_key(jsonfile, reference)
-        #print ("  validate_with_ref : schema :", schema_data)
+        try:
+            #print ("  validate_with_ref : full ref :", schema_data_reference)
+            ref = schema_data_reference.get("$ref")
+            reference = ref.replace('#/definitions/', '')
+            print ("  validate_with_ref : ref :", reference)
+            definitions_dict = jsonfile.get("definitions")
+            #schema_data = find_key(definitions_dict, reference)
+            schema_data = definitions_dict.get(reference)
+            print ("  validate_with_ref : schema :", schema_data)
+        except:
+            print ("ERROR1: with ",schema_data_reference)
+            
         try: 
             validate_data(schema_data, example_data)
             print("  validation: OK\n")
@@ -71,6 +79,8 @@ def validate_with_ref(jsonfile, schema_data_reference, example_data):
             pass
             
     except:
+        print ("ERROR: with ",schema_data_reference)
+        print ("     : with ",schema_data)
         traceback.print_exc()
         
 def validate_data(schema_data, example_data):
@@ -114,9 +124,9 @@ def printKeysOfDict(method_data, prefix ="    key :"):
 #
 #   main of script
 #
-print ("***************************")
-print ("*** swag-validator (v1) ***")
-print ("***************************")
+print ("*****************************")
+print ("*** swag-validator (v1.1) ***")
+print ("*****************************")
 parser = argparse.ArgumentParser()
 
 parser.add_argument( "-ver"        , "--verbose"     , help="Execute in verbose mode", action='store_true')
