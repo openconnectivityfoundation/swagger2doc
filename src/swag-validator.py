@@ -67,8 +67,7 @@ def validate_with_ref(jsonfile, schema_data_reference, example_data):
             definitions_dict = jsonfile.get("definitions")
             #schema_data = find_key(definitions_dict, reference)
             schema_data = definitions_dict.get(reference)
-            resolve_ref(jsonfile, schema_data)
-            resolve_ref(jsonfile, schema_data)
+            resolve_all_ref(jsonfile, schema_data)
             print ("  validate_with_ref : schema :", schema_data)
         except:
             print ("ERROR1: with ",schema_data_reference)
@@ -89,6 +88,14 @@ def validate_with_ref(jsonfile, schema_data_reference, example_data):
 def validate_data(schema_data, example_data):
     validate(example_data, schema_data)
         
+        
+def resolve_all_ref(json_data, ref_dict):
+    key = find_key(ref_dict, "$ref")
+    while key is not None:
+        resolve_ref(json_data, ref_dict)
+        key = find_key(ref_dict, "$ref")
+    
+    
 def resolve_ref(json_data, ref_dict):
     """
     find key "target" in recursive dict
@@ -179,7 +186,7 @@ def printKeysOfDict(method_data, prefix ="    key :"):
 #   main of script
 #
 print ("*****************************")
-print ("*** swag-validator (v1.3) ***")
+print ("*** swag-validator (v1.4) ***")
 print ("*****************************")
 parser = argparse.ArgumentParser()
 
