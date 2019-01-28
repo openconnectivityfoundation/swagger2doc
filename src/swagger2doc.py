@@ -103,20 +103,20 @@ def Table(paragraph):
     fldChar.set(qn('w:fldCharType'), 'end')
     r.append(fldChar)
 
-    
+
 def Table_annex(paragraph):
     run = run = paragraph.add_run()
     r = run._r
     fldChar = OxmlElement('w:fldChar')
     fldChar.set(qn('w:fldCharType'), 'begin')
     r.append(fldChar)
-    
+
     #instrText = OxmlElement('w:instrText')
     #instrText.text = ' STYLEREF 9 \s '
     #r.append(instrText)
     #
     instrText = OxmlElement('w:instrText')
-    instrText.text = ' SEQ Table Annex \* ARABIC  \s 9 '
+    instrText.text = ' SEQ Table-Annex \* ARABIC  \s 9 '
     r.append(instrText)
     fldChar = OxmlElement('w:fldChar')
     fldChar.set(qn('w:fldCharType'), 'end')
@@ -240,14 +240,14 @@ class CreateWordDoc(object):
         except:
             print ("CreateWordDoc *** ERROR : could not open:", args.swagger)
             return
-        
+
         try:
             json_dict = json.loads(schema_string)
             self.json_parse_tree = json_dict
         except:
             print ("CreateWordDoc *** ERROR : error in JSON:", args.swagger)
             traceback.print_exc()
-            
+
 
     def swag_sanitize_description(self, description):
         """
@@ -328,32 +328,31 @@ class CreateWordDoc(object):
         :param resource_name: the resource_name
 
         """
-        full_resource_name = "/" + str(resource_name)
+        full_resource_name = "/" + str(self.resource_name)
         path = find_key_link(parse_tree, full_resource_name)
 
         row_cells = self.table.add_row().cells
         # row_cells[0].text = resource
         full_resource_name_no_query = full_resource_name.split("?")[0]
-        row_cells[0].text = full_resource_name_no_query
 
         if path is not None:
             for method, mobj in path.items():
                 # print "Method:",method
                 # PUT == Create
                 if method == "put":
-                    row_cells[1].text = method
+                    row_cells[0].text = method
                 # GET = Read
                 if method == "get":
-                    row_cells[2].text = method
+                    row_cells[1].text = method
                 # POST - update  (agreed on 05/02/2015)
                 if method == "post":
-                    row_cells[3].text = method
+                    row_cells[2].text = method
                 # DELETE = Delete
                 if method == "delete":
-                    row_cells[4].text = method
+                    row_cells[3].text = method
                 # NOTIFY = NOTIFY (does not exist)
                 if method == "get":
-                    row_cells[5].text = "observe"
+                    row_cells[4].text = "observe"
 
     def list_resources_crudn(self, parse_tree, resource_name=None):
         """
@@ -362,30 +361,33 @@ class CreateWordDoc(object):
         :param resource_name:
         """
         level = 0
-        
+
+        # create the lead in referencint text
+        reference_para = self.document.add_paragraph('<Table Reference Here> defines the CRUDN operations that are supported on the ')
+        reference_para.add_run(resource_name+" Resource Type")
+
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         if self.annex_switch is True:
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" – The CRUDN operations of the resource with type 'rt' = "+resource_name)
+        paragraph.add_run(" – The CRUDN operations of the Resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
 
         # create the table
-        self.table = self.document.add_table(rows=1, cols=6)
+        self.table = self.document.add_table(rows=1, cols=5)
         try:
             self.table.style = TABLESTYLE
         except:
             print ("no style set for table")
-                
+
         hdr_cells = self.table.rows[0].cells
-        hdr_cells[0].text = 'Resource'
-        hdr_cells[1].text = 'Create'
-        hdr_cells[2].text = 'Read'
-        hdr_cells[3].text = 'Update'
-        hdr_cells[4].text = 'Delete'
-        hdr_cells[5].text = 'Notify'
+        hdr_cells[0].text = 'Create'
+        hdr_cells[1].text = 'Read'
+        hdr_cells[2].text = 'Update'
+        hdr_cells[3].text = 'Delete'
+        hdr_cells[4].text = 'Notify'
 
         self.list_resource(parse_tree, resource_name)
 
@@ -441,7 +443,7 @@ class CreateWordDoc(object):
                                     #row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
                                     #txt_formatted = row_cells[4].text = description_text
                                     #row_cells[4].paragraphs[0].WD_ALIGN_PARAGRAPH.LEFT
-                                    
+
                                 else:
                                     print ("list_properties : not handled:", prop, property_list[prop])
                             else:
@@ -539,8 +541,8 @@ class CreateWordDoc(object):
                             except:
                                 traceback.print_exc()
                                 pass
-                            
-                            
+
+
     def list_attributes(self, parse_tree, resource_name=None):
         """
         list all properties (attributes) in an table.
@@ -548,14 +550,18 @@ class CreateWordDoc(object):
         :param parse_tree:
         :param resource_name:
         """
-        
+
+        # create the lead in referencint text
+        reference_para = self.document.add_paragraph('<Table Reference Here> defines the Properties that are part of the ')
+        reference_para.add_run(resource_name+" Resource Type")
+
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         if self.annex_switch is True:
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" – The properties definitions of the resource with type 'rt' = "+resource_name)
+        paragraph.add_run(" – The Property definitions of the Resource with type 'rt' = "+resource_name)
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5)
@@ -596,7 +602,7 @@ class CreateWordDoc(object):
         :param parse_tree:
         :param select_resource:
         """
-        
+
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         if self.annex_switch is True:
@@ -605,7 +611,7 @@ class CreateWordDoc(object):
             Table (paragraph)
         paragraph.add_run(" – The property mapping for "+select_resource+".")
         paragraph.style = 'TABLE-title'
-        # create the table        
+        # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=4)
         try:
             self.tableAttribute.style = TABLESTYLE
@@ -621,7 +627,7 @@ class CreateWordDoc(object):
             pass
         else:
             self.list_properties_derived(parse_tree, select_resource )
-            
+
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         if self.annex_switch is True:
@@ -630,13 +636,13 @@ class CreateWordDoc(object):
             Table (paragraph)
         paragraph.add_run(" The properties of "+select_resource+".")
         paragraph.style = 'TABLE-title'
-        # create the table        
+        # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=4)
         try:
             self.tableAttribute.style = TABLESTYLE
         except:
             print ("no style set for table")
-            
+
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
         hdr_cells[1].text = 'Type'
@@ -708,7 +714,7 @@ class CreateWordDoc(object):
         print ("sanitized text:", new_text)
         if new_text != "":
             # add text + heading
-            
+
             # section introduction
             par = self.document.add_heading('Introduction', level=3)
             if self.annex_switch is True:
@@ -721,7 +727,7 @@ class CreateWordDoc(object):
         if resource_name is not None:
             url_without_query= str(resource_name).split('?')[0]
         else:
-            # TODO: fix this 
+            # TODO: fix this
             url_without_query = ""
         if url_without_query != "":
             # write the data
@@ -784,7 +790,8 @@ class CreateWordDoc(object):
                 par = self.document.add_heading('Property definition', level=3)
                 if self.annex_switch is True:
                     par.style = 'ANNEX-heading2'
-                self.list_attributes(parse_tree, resource_name=resource_name)
+                rt_name_str = str(rt_name)
+                self.list_attributes(parse_tree, resource_name=rt_name_str)
 
         if resource_name is not None:
             # section CRUDN definition
@@ -792,7 +799,8 @@ class CreateWordDoc(object):
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
             if resource_name is not None:
-                self.list_resources_crudn(parse_tree, resource_name=resource_name)
+                rt_name_str = str(rt_name)
+                self.list_resources_crudn(parse_tree, resource_name=rt_name_str)
 
             if self.schema_switch is True:
                 # section extra JSON definition
@@ -836,7 +844,7 @@ class CreateWordDoc(object):
                     Table (paragraph)
                 paragraph.add_run(" The properties definitions of schema file "+schema_file)
                 paragraph.style = 'TABLE-title'
-                
+
                 # create the table
                 #self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
                 self.tableAttribute = self.document.add_table(rows=1, cols=5)
