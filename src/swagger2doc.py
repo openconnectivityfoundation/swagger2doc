@@ -768,7 +768,7 @@ class CreateWordDoc(object):
 
         # section Swagger definition
         if resource_name is not None:
-            par = self.document.add_heading('Swagger 2.0 definition', level=3)
+            par = self.document.add_heading('OpenAPI 2.0 definition', level=3)
         else:
             par = self.document.add_heading('Derived model definition', level=3)
         if self.annex_switch is True:
