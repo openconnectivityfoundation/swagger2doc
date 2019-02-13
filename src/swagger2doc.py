@@ -228,6 +228,7 @@ class CreateWordDoc(object):
         self.resource_name = resource_name
         self.swagger_parser = swagger_parser
         self.annex_switch = False
+        self.wellknown_switch = False
         self.composite_switch = False
         self.sensor_switch = False
         self.schema_switch = False
@@ -369,7 +370,7 @@ class CreateWordDoc(object):
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" – The CRUDN operations of the resource with type 'rt' = "+resource_name)
+        paragraph.add_run(' – The CRUDN operations of the Resource with type "rt" = '+resource_name)
         paragraph.style = 'TABLE-title'
 
         # create the table
@@ -555,7 +556,7 @@ class CreateWordDoc(object):
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" – The properties definitions of the resource with type 'rt' = "+resource_name)
+        paragraph.add_run(' – The properties definitions of the Resource with type "rt" = '+resource_name)
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5)
@@ -683,7 +684,10 @@ class CreateWordDoc(object):
         :param parse_tree:
         :param resource_name:
         """
-        title_name = find_key_link(parse_tree, 'title')
+        try:
+            title_name = parse_tree["info"]["title"]
+        except:
+            title_name = find_key_link(parse_tree, 'title')
         print ("Title:", title_name)
         self.title = title_name
         par = self.document.add_heading(title_name, level=2)
@@ -725,10 +729,10 @@ class CreateWordDoc(object):
             url_without_query = ""
         if url_without_query != "":
             # write the data
-            if self.annex_switch is False:
+            if self.wellknown_switch is False:
                 par = self.document.add_heading('Example URI', level=3)
             else:
-                par = self.document.add_heading('Wellknown URI', level=3)
+                par = self.document.add_heading('Well-known URI', level=3)
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
             self.document.add_paragraph("/"+str(url_without_query))
@@ -739,7 +743,7 @@ class CreateWordDoc(object):
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
             if rt_name is not None:
-                text = "The resource type (rt) is defined as: " + str(rt_name) + "."
+                text = 'The Resource Type is defined as: "' + str(rt_name) + '".'
                 self.document.add_paragraph(text)
             else:
                 print ("RT not found!")
@@ -762,7 +766,7 @@ class CreateWordDoc(object):
 
         # section Swagger definition
         if resource_name is not None:
-            par = self.document.add_heading('Swagger 2.0 definition', level=3)
+            par = self.document.add_heading('OAS 2.0 definition', level=3)
         else:
             par = self.document.add_heading('Derived model definition', level=3)
         if self.annex_switch is True:
@@ -885,9 +889,9 @@ class CreateWordDoc(object):
 #
 #   main of script
 #
-print ("************************")
-print ("*** swagger2doc (v1.0.1) ***")
-print ("************************")
+print ("****************************")
+print ("*** swagger2doc (v1.0.2) ***")
+print ("****************************")
 parser = argparse.ArgumentParser()
 
 parser.add_argument( "-ver"        , "--verbose"    , help="Execute in verbose mode", action='store_true')
@@ -907,6 +911,7 @@ parser.add_argument( "-schemadir"  , "--schemadir"  , default=".",
 
 parser.add_argument('-derived', '--derived', default=None, help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table use "." to ignore the property name setting')
 parser.add_argument('-annex', '--annex', help='uses a annex heading instead of normal heading (--annex true)')
+parser.add_argument('-wellknown', '--wellknown', help='uses the prefix of welknown url (--wellknown true)')
 
 args = parser.parse_args()
 
@@ -919,6 +924,7 @@ print("docx        : " + str(args.docx))
 print("word_out    : " + str(args.word_out))
 print("derived     : " + str(args.derived))
 print("annex       : " + str(args.annex))
+print("wellknown   : " + str(args.wellknown))
 print("")
 
 try:
@@ -934,8 +940,16 @@ try:
         annex_switch = False
     else:
         annex_switch = True
+        
+        
+    wellknown_switch = args.wellknown
+    if wellknown_switch is None:
+        wellknown_switch = False
+    else:
+        wellknown_switch = True
 
     worddoc.annex_switch = annex_switch
+    worddoc.wellknown_switch = wellknown_switch
 
     worddoc.derived_name = args.derived
     if worddoc.derived_name in ["."]:
