@@ -275,7 +275,7 @@ class CreateWordDoc(object):
         find the required property list
 
         :param input_string_schema: json schema as string
-        :return:
+        :return: list of required properties
         """
         ignore_list = ['required', '[', ']', ',', ': [']
         lines_schema = input_string_schema.splitlines()
@@ -327,7 +327,6 @@ class CreateWordDoc(object):
         e.g. it adds an entry to the CRUDN table
         :param parse_tree:
         :param resource_name: the resource_name
-
         """
         full_resource_name = "/" + str(self.resource_name)
         path = find_key_link(parse_tree, full_resource_name)
@@ -355,17 +354,17 @@ class CreateWordDoc(object):
                 if method == "get":
                     row_cells[4].text = "observe"
 
-    def list_resources_crudn(self, parse_tree, resource_name=None):
+    def list_resources_crudn(self, parse_tree, resource_type=None):
         """
         function to create the CRUDN table
         :param parse_tree:
-        :param resource_name:
+        :param resource_type:
         """
         level = 0
 
         # create the lead in referencint text
         reference_para = self.document.add_paragraph('<Table Reference Here> defines the CRUDN operations that are supported on the ')
-        reference_para.add_run(resource_name+" Resource Type")
+        reference_para.add_run(resource_type+" Resource Type.")
 
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
@@ -373,8 +372,8 @@ class CreateWordDoc(object):
             Table_annex (paragraph)
         else:
             Table (paragraph)
-            
-        paragraph.add_run(' – The CRUDN operations of the Resource with type "rt" = '+resource_name)
+        print ("list_resources_crudn: rt :",resource_type);
+        paragraph.add_run(' – The CRUDN operations of the Resource with type "rt" = '+resource_type+".")
         paragraph.style = 'TABLE-title'
 
         # create the table
@@ -391,7 +390,7 @@ class CreateWordDoc(object):
         hdr_cells[3].text = 'Delete'
         hdr_cells[4].text = 'Notify'
 
-        self.list_resource(parse_tree, resource_name)
+        self.list_resource(parse_tree, resource_type)
 
     def list_properties(self, parse_tree, resource_name):
         """
@@ -554,8 +553,8 @@ class CreateWordDoc(object):
         """
 
         # create the lead in referencint text
-        reference_para = self.document.add_paragraph('<Table Reference Here> defines the Properties that are part of the ')
-        reference_para.add_run(resource_name+" Resource Type")
+        reference_para = self.document.add_paragraph('<Table Reference Here> defines the Properties that are part of the \"')
+        reference_para.add_run(resource_name+"\" Resource Type.")
 
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
@@ -564,7 +563,7 @@ class CreateWordDoc(object):
         else:
             Table (paragraph)
 
-        paragraph.add_run(' – The Property definitions of the Resource with type "rt" = '+resource_name)
+        paragraph.add_run(' – The Property definitions of the Resource with type "rt" = "'+resource_name+'".')
 
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5)
@@ -806,7 +805,7 @@ class CreateWordDoc(object):
                 par.style = 'ANNEX-heading2'
             if resource_name is not None:
                 rt_name_str = str(rt_name)
-                self.list_resources_crudn(parse_tree, resource_name=rt_name_str)
+                self.list_resources_crudn(parse_tree, resource_type=rt_name_str)
 
             if self.schema_switch is True:
                 # section extra JSON definition
@@ -848,7 +847,7 @@ class CreateWordDoc(object):
                     Table_annex (paragraph)
                 else:
                     Table (paragraph)
-                paragraph.add_run(" The properties definitions of schema file "+schema_file)
+                paragraph.add_run(" - The Property definitions of schema file "+schema_file+'.')
                 paragraph.style = 'TABLE-title'
 
                 # create the table
