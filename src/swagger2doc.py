@@ -564,7 +564,8 @@ class CreateWordDoc(object):
             Table (paragraph)
 
         paragraph.add_run(' – The Property definitions of the Resource with type "rt" = "'+resource_name+'".')
-
+        paragraph.style = 'TABLE-title'
+        
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5)
         try:
@@ -949,8 +950,8 @@ try:
         annex_switch = False
     else:
         annex_switch = True
-        
-        
+
+
     wellknown_switch = args.wellknown
     if wellknown_switch is None:
         wellknown_switch = False
