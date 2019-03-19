@@ -363,8 +363,8 @@ class CreateWordDoc(object):
         level = 0
 
         # create the lead in referencint text
-        reference_para = self.document.add_paragraph('<Table Reference Here> defines the CRUDN operations that are supported on the ')
-        reference_para.add_run(resource_type+" Resource Type.")
+        reference_para = self.document.add_paragraph('<Table Reference Here> defines the CRUDN operations that are supported on the "')
+        reference_para.add_run(resource_type+"\" Resource Type.")
 
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
