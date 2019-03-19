@@ -373,7 +373,7 @@ class CreateWordDoc(object):
         else:
             Table (paragraph)
         print ("list_resources_crudn: rt :",resource_type);
-        paragraph.add_run(' – The CRUDN operations of the Resource with type "rt" = '+resource_type+".")
+        paragraph.add_run(' – The CRUDN operations of the Resource with type "rt" = "'+resource_type+'".')
         paragraph.style = 'TABLE-title'
 
         # create the table
@@ -565,7 +565,7 @@ class CreateWordDoc(object):
 
         paragraph.add_run(' – The Property definitions of the Resource with type "rt" = "'+resource_name+'".')
         paragraph.style = 'TABLE-title'
-        
+
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=5)
         try:
@@ -751,7 +751,11 @@ class CreateWordDoc(object):
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
             if rt_name is not None:
-                text = 'The Resource Type is defined as: "' + str(rt_name) + '".'
+                rt_name_str = str(rt_name)
+                # remove ['']
+                for char in "[]'":
+                    rt_name_str = rt_name_str.replace(char,'')
+                text = 'The Resource Type is defined as: "' + rt_name_str + '".'
                 self.document.add_paragraph(text)
             else:
                 print ("RT not found!")
@@ -797,6 +801,9 @@ class CreateWordDoc(object):
                 if self.annex_switch is True:
                     par.style = 'ANNEX-heading2'
                 rt_name_str = str(rt_name)
+                # remove ['']
+                for char in "[]'":
+                    rt_name_str = rt_name_str.replace(char,'')
                 self.list_attributes(parse_tree, resource_name=rt_name_str)
 
         if resource_name is not None:
@@ -806,6 +813,9 @@ class CreateWordDoc(object):
                 par.style = 'ANNEX-heading2'
             if resource_name is not None:
                 rt_name_str = str(rt_name)
+                # remove ['']
+                for char in "[]'":
+                    rt_name_str = rt_name_str.replace(char,'')
                 self.list_resources_crudn(parse_tree, resource_type=rt_name_str)
 
             if self.schema_switch is True:
