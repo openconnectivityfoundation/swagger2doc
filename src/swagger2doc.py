@@ -775,7 +775,7 @@ class CreateWordDoc(object):
             for def_name, def_data in parse_tree["definitions"].items():
                 print ("derived model name (defintions):",def_name)
                 if def_name is not None:
-                    text = "The derived model: " + str(def_name) + ". "
+                    text = 'The derived model: "' + str(def_name) + '".'
                     description_text = def_data.get('description', "")
                     self.document.add_paragraph(text + description_text)
             par = self.document.add_heading('Property definition', level=3)
