@@ -605,6 +605,9 @@ class CreateWordDoc(object):
         :param parse_tree:
         :param select_resource:
         """
+        # create the lead in referencint text
+        reference_para = self.document.add_paragraph('<Table Reference Here> provides the detailed per Property mapping for \"')
+        reference_para.add_run(select_resource+"\".")
 
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
@@ -631,13 +634,17 @@ class CreateWordDoc(object):
         else:
             self.list_properties_derived(parse_tree, select_resource )
 
+        # create the lead in referencint text
+        reference_para = self.document.add_paragraph('<Table Reference Here> provides the details of the Properties that are part of \"')
+        reference_para.add_run(select_resource+"\".")
+
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
         if self.annex_switch is True:
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" The properties of "+select_resource+".")
+        paragraph.add_run(" – The properties of "+select_resource+".")
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=4)
