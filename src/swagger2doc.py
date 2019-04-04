@@ -365,6 +365,7 @@ class CreateWordDoc(object):
         # create the lead in referencint text
         reference_para = self.document.add_paragraph('<Table Reference Here> defines the CRUDN operations that are supported on the "')
         reference_para.add_run(resource_type+"\" Resource Type.")
+        reference_para.style = 'PARAGRAPH'
 
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
@@ -555,6 +556,7 @@ class CreateWordDoc(object):
         # create the lead in referencint text
         reference_para = self.document.add_paragraph('<Table Reference Here> defines the Properties that are part of the \"')
         reference_para.add_run(resource_name+"\" Resource Type.")
+        reference_para.style = 'PARAGRAPH'
 
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
@@ -608,6 +610,7 @@ class CreateWordDoc(object):
         # create the lead in referencint text
         reference_para = self.document.add_paragraph('<Table Reference Here> provides the detailed per Property mapping for \"')
         reference_para.add_run(select_resource+"\".")
+        reference_para.style = 'PARAGRAPH'
 
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
@@ -615,7 +618,7 @@ class CreateWordDoc(object):
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" – The property mapping for "+select_resource+".")
+        paragraph.add_run(' – The Property mapping for "'+select_resource+'".')
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=4)
@@ -637,6 +640,7 @@ class CreateWordDoc(object):
         # create the lead in referencint text
         reference_para = self.document.add_paragraph('<Table Reference Here> provides the details of the Properties that are part of \"')
         reference_para.add_run(select_resource+"\".")
+        reference_para.style = 'PARAGRAPH'
 
         # create the caption
         paragraph = self.document.add_paragraph('Table ', style='Caption')
@@ -644,7 +648,7 @@ class CreateWordDoc(object):
             Table_annex (paragraph)
         else:
             Table (paragraph)
-        paragraph.add_run(" – The properties of "+select_resource+".")
+        paragraph.add_run(' – The Properties of "'+select_resource+'".')
         paragraph.style = 'TABLE-title'
         # create the table
         self.tableAttribute = self.document.add_table(rows=1, cols=4)
@@ -734,6 +738,7 @@ class CreateWordDoc(object):
                 par.style = 'ANNEX-heading2'
             par_text = self.document.add_paragraph(new_text)
             par_text.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            par_text.style = 'PARAGRAPH'
             #self.document.add_paragraph(value)
 
         # section URI
@@ -750,7 +755,8 @@ class CreateWordDoc(object):
                 par = self.document.add_heading('Well-known URI', level=3)
             if self.annex_switch is True:
                 par.style = 'ANNEX-heading2'
-            self.document.add_paragraph("/"+str(url_without_query))
+            paragraph = self.document.add_paragraph("/"+str(url_without_query))
+            paragraph.style = 'PARAGRAPH'
 
         # section RT
         if resource_name is not None:
@@ -763,7 +769,8 @@ class CreateWordDoc(object):
                 for char in "[]'":
                     rt_name_str = rt_name_str.replace(char,'')
                 text = 'The Resource Type is defined as: "' + rt_name_str + '".'
-                self.document.add_paragraph(text)
+                paragraph = self.document.add_paragraph(text)
+                paragraph.style = 'PARAGRAPH'
             else:
                 print ("RT not found!")
         else:
@@ -777,7 +784,8 @@ class CreateWordDoc(object):
                 if def_name is not None:
                     text = 'The derived model: "' + str(def_name) + '".'
                     description_text = def_data.get('description', "")
-                    self.document.add_paragraph(text + description_text)
+                    paragraph = self.document.add_paragraph(text + description_text)
+                    paragraph.style = 'PARAGRAPH'
             par = self.document.add_heading('Property definition', level=3)
             for def_name, def_data in parse_tree["definitions"].items():
                 print ("derived model name (table):",def_name)
