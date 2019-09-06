@@ -233,6 +233,7 @@ class CreateWordDoc(object):
         self.sensor_switch = False
         self.schema_switch = False
         self.schemaWT_switch = False
+        self.cloud_switch = False
         self.derived_name = None
         self.title = None
 
@@ -696,6 +697,17 @@ class CreateWordDoc(object):
         value = find_key_link(value1, target2)
         return value
 
+    def get_value_by_full_path_name(self, parse_tree, path_name, target):
+        """
+        retrieve the target key below the path_name
+        :param parse_tree: tree to search from
+        :param path_name: url name (with the /)
+        :param target: key to find after path_name
+        :return:
+        """
+        json_path_dict = find_key_link(parse_tree, path_name)
+        value = find_key_link(json_path_dict, target)
+        return value
 
     def generate_sections(self, parse_tree, resource_name):
         """
@@ -902,6 +914,53 @@ class CreateWordDoc(object):
                 except:
                     pass
 
+    def generate_sections_cloud(self, parse_tree):
+        """
+        generate the individual sections
+        :param parse_tree:
+        """
+        try:
+            title_name = parse_tree["info"]["title"]
+        except:
+            title_name = find_key_link(parse_tree, 'title')
+        print ("Title:", title_name)
+        self.title = title_name
+        par = self.document.add_heading(title_name, level=2)
+        if self.annex_switch is True:
+            par.style = 'ANNEX-heading1'
+
+        par = self.document.add_heading('Supported APIs', level=3)
+        if self.annex_switch is True:
+            par.style = 'ANNEX-heading2'
+
+        # Get the paths supportedenumeration
+        path_list = find_key_link(parse_tree, 'paths')
+        for path, path_obj in path_list.items():
+            print ("Path found: ", path)
+            par = self.document.add_heading(path, level=4)
+            if self.annex_switch is True:
+                par.style = 'ANNEX-heading3'
+            description_value = self.get_value_by_full_path_name(parse_tree, path, "description")
+            new_text = self.swag_unsanitize_description(description_value)
+            if new_text != "":
+                # add text
+                par_text = self.document.add_paragraph(new_text)
+                par_text.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                par_text.style = 'PARAGRAPH'
+
+        par = self.document.add_heading('OpenAPI 2.0 definition', level=3)
+        if self.annex_switch is True:
+            par.style = 'ANNEX-heading2'
+
+        object_string = open(args.swagger, 'r').read()
+        sanitized_text = self.swag_unsanitize_description(object_string)
+        #object_string = json.dumps(parse_tree, sort_keys=True, indent=2, separators=(',', ': '))
+        try:
+            par = self.document.add_paragraph(sanitized_text, style='CODE-BLACK')
+            par.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        except:
+            pass
+
     def convert(self):
         """
         conversion of the swagger data into the word document
@@ -915,7 +974,12 @@ class CreateWordDoc(object):
             print ("make sure that docx file exist..")
             return
 
-        self.generate_sections(self.json_parse_tree, self.resource_name)
+        #self.generate_sections(self.json_parse_tree, self.resource_name)
+        if self.cloud_switch is True:
+            self.generate_sections_cloud(self.json_parse_tree)
+        else:
+            self.generate_sections(self.json_parse_tree, self.resource_name)
+
         if self.docx_name_out is not None:
             self.document.save(self.docx_name_out)
             print ("document saved..", self.docx_name_out)
@@ -947,6 +1011,7 @@ parser.add_argument( "-schemadir"  , "--schemadir"  , default=".",
 parser.add_argument('-derived', '--derived', default=None, help='derived data model specificaton (--derived XXX) e.g. XXX Property Name in table use "." to ignore the property name setting')
 parser.add_argument('-annex', '--annex', help='uses a annex heading instead of normal heading (--annex true)')
 parser.add_argument('-wellknown', '--wellknown', help='uses the prefix of welknown url (--wellknown true)')
+parser.add_argument('-cloud', '--cloud', help='uses the cloud api formating (--cloud true)')
 
 args = parser.parse_args()
 
@@ -960,6 +1025,7 @@ print("word_out    : " + str(args.word_out))
 print("derived     : " + str(args.derived))
 print("annex       : " + str(args.annex))
 print("wellknown   : " + str(args.wellknown))
+print("cloud       : " + str(args.cloud))
 print("")
 
 try:
@@ -983,8 +1049,15 @@ try:
     else:
         wellknown_switch = True
 
+    cloud_switch = args.cloud
+    if cloud_switch is None:
+        cloud_switch = False
+    else:
+        cloud_switch = True
+
     worddoc.annex_switch = annex_switch
     worddoc.wellknown_switch = wellknown_switch
+    worddoc.cloud_switch = cloud_switch
 
     worddoc.derived_name = args.derived
     if worddoc.derived_name in ["."]:
