@@ -488,9 +488,13 @@ class CreateWordDoc(object):
 
                                         row_cells = self.tableAttribute.add_row().cells
                                         row_cells[0].text = str(prop)
+                                        row_cells[0].paragraphs[0].style = 'TABLE-cell'
                                         row_cells[1].text = str(ocf_resource)
+                                        row_cells[1].paragraphs[0].style = 'TABLE-cell'
                                         row_cells[2].text = self.list_to_string(to_ocf)
+                                        row_cells[2].paragraphs[0].style = 'TABLE-cell'
                                         row_cells[3].text = self.list_to_string(from_ocf)
+                                        row_cells[3].paragraphs[0].style = 'TABLE-cell'
                                         #row_cells[4].text = description_text
                                     else:
                                         print ("list_properties_derived : not handled:", prop, properties[prop])
@@ -531,12 +535,19 @@ class CreateWordDoc(object):
                                         type_text = property_list[prop].get('type', "")
                                         row_cells = self.tableAttribute.add_row().cells
                                         row_cells[0].text = str(prop)
+                                        row_cells[0].paragraphs[0].style = 'TABLE-cell'
                                         row_cells[1].text = type_text
+                                        row_cells[1].paragraphs[0].style = 'TABLE-cell'
+
                                         if prop in required_props:
                                             row_cells[2].text = "yes"
                                         else:
                                             row_cells[2].text = "no"
+                                        row_cells[2].paragraphs[0].style = 'TABLE-cell'
+
                                         row_cells[3].text = description_text
+                                        row_cells[3].paragraphs[0].style = 'TABLE-cell'
+
                                     else:
                                         print ("list_properties_derived : not handled:", prop, properties[prop])
                                 else:
@@ -628,10 +639,16 @@ class CreateWordDoc(object):
         except:
             print ("no style set for table")
         hdr_cells = self.tableAttribute.rows[0].cells
+        #hdr_cells[0].text = str(self.derived_name) + ' Property name'
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
+        hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[1].text = 'OCF Resource'
+        hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[2].text = 'To OCF'
+        hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[3].text = 'From OCF'
+        hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
         level = 1
         if select_resource is None:
             pass
@@ -660,9 +677,14 @@ class CreateWordDoc(object):
 
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
+        hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[1].text = 'Type'
+        hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[2].text = 'Required'
+        hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[3].text = 'Description'
+        hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
         level = 1
         if select_resource is None:
             pass
