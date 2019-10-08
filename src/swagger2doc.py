@@ -30,6 +30,7 @@ import argparse
 import traceback
 from datetime import datetime
 from time import gmtime, strftime
+from collections import OrderedDict
 #import jsonref
 
 if sys.version_info < (3, 5):
@@ -244,6 +245,7 @@ class CreateWordDoc(object):
             return
 
         try:
+            json_dict = OrderedDict()
             json_dict = json.loads(schema_string)
             self.json_parse_tree = json_dict
         except:
@@ -355,6 +357,10 @@ class CreateWordDoc(object):
                 if method == "get":
                     row_cells[4].text = "observe"
 
+            for cell_count in range(5):
+                row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
+
+
     def list_resources_crudn(self, parse_tree, resource_type=None):
         """
         function to create the CRUDN table
@@ -387,10 +393,20 @@ class CreateWordDoc(object):
 
         hdr_cells = self.table.rows[0].cells
         hdr_cells[0].text = 'Create'
+        hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[1].text = 'Read'
+        hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[2].text = 'Update'
+        hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[3].text = 'Delete'
+        hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[4].text = 'Notify'
+        hdr_cells[4].paragraphs[0].style = 'TABLE-col-heading'
+
 
         self.list_resource(parse_tree, resource_type)
 
@@ -446,7 +462,8 @@ class CreateWordDoc(object):
                                     #row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
                                     #txt_formatted = row_cells[4].text = description_text
                                     #row_cells[4].paragraphs[0].WD_ALIGN_PARAGRAPH.LEFT
-
+                                    for cell_count in range(5):
+                                        row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
                                 else:
                                     print ("list_properties : not handled:", prop, property_list[prop])
                             else:
@@ -488,13 +505,12 @@ class CreateWordDoc(object):
 
                                         row_cells = self.tableAttribute.add_row().cells
                                         row_cells[0].text = str(prop)
-                                        row_cells[0].paragraphs[0].style = 'TABLE-cell'
                                         row_cells[1].text = str(ocf_resource)
-                                        row_cells[1].paragraphs[0].style = 'TABLE-cell'
                                         row_cells[2].text = self.list_to_string(to_ocf)
-                                        row_cells[2].paragraphs[0].style = 'TABLE-cell'
                                         row_cells[3].text = self.list_to_string(from_ocf)
-                                        row_cells[3].paragraphs[0].style = 'TABLE-cell'
+
+                                        for cell_count in range(4):
+                                            row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
                                         #row_cells[4].text = description_text
                                     else:
                                         print ("list_properties_derived : not handled:", prop, properties[prop])
@@ -535,19 +551,16 @@ class CreateWordDoc(object):
                                         type_text = property_list[prop].get('type', "")
                                         row_cells = self.tableAttribute.add_row().cells
                                         row_cells[0].text = str(prop)
-                                        row_cells[0].paragraphs[0].style = 'TABLE-cell'
                                         row_cells[1].text = type_text
-                                        row_cells[1].paragraphs[0].style = 'TABLE-cell'
 
                                         if prop in required_props:
                                             row_cells[2].text = "yes"
                                         else:
                                             row_cells[2].text = "no"
-                                        row_cells[2].paragraphs[0].style = 'TABLE-cell'
 
                                         row_cells[3].text = description_text
-                                        row_cells[3].paragraphs[0].style = 'TABLE-cell'
-
+                                        for cell_count in range(4):
+                                            row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
                                     else:
                                         print ("list_properties_derived : not handled:", prop, properties[prop])
                                 else:
@@ -590,10 +603,20 @@ class CreateWordDoc(object):
         #self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = 'Property name'
+        hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[1].text = 'Value type'
+        hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[2].text = 'Mandatory'
+        hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[3].text = 'Access mode'
+        hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[4].text = 'Description'
+        hdr_cells[4].paragraphs[0].style = 'TABLE-col-heading'
+
 
         level = 1
 
@@ -610,6 +633,9 @@ class CreateWordDoc(object):
             row_cells[2].text = "yes"
             row_cells[3].text = "Read Only"
             row_cells[4].text = "True = Sensed, False = Not Sensed."
+            for cell_count in range(5):
+                row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
+
 
     def list_attributes_derived(self, parse_tree, select_resource=None):
 
@@ -920,10 +946,20 @@ class CreateWordDoc(object):
 
                 hdr_cells = self.tableAttribute.rows[0].cells
                 hdr_cells[0].text = 'Property name'
+                hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
+
                 hdr_cells[1].text = 'Value type'
+                hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
+
                 hdr_cells[2].text = 'Mandatory'
+                hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
+
                 hdr_cells[3].text = 'Access mode'
+                hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
                 hdr_cells[4].text = 'Description'
+                hdr_cells[4].paragraphs[0].style = 'TABLE-col-heading'
+
 
                 # add fields in table with contents..
                 self.parse_schema(schema_text)
