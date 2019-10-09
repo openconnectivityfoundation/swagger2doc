@@ -123,22 +123,6 @@ def Table_annex(paragraph):
     fldChar.set(qn('w:fldCharType'), 'end')
     r.append(fldChar)
 
-def load_json_schema(filename, my_dir):
-    """
-    load the JSON schema file
-    :param filename: filename (with extension)
-    :param my_dir: path to the file
-    :return: json_dict
-    """
-    full_path = os.path.join(my_dir, filename)
-    if os.path.isfile(full_path) is False:
-        print ("json file does not exist:", full_path)
-
-    linestring = open(full_path, 'r').read()
-    json_dict = json.loads(linestring)
-
-    return json_dict
-
 
 def get_dir_list(dir, ext=None):
     """
@@ -159,7 +143,7 @@ def get_dir_list(dir, ext=None):
 def find_key(rec_dict, target, depth=0):
     """
     find key "target" in recursive dict
-    :param rec_dict: dict to search in, json schema dict, so it is combination of dict and arrays
+    :param rec_dict: dict to search in, json schema dict, so it is combination of dict, 'r').read() and arrays
     :param target: target key to search for
     :param depth: depth of the search (recursion)
     :return:
@@ -245,8 +229,9 @@ class CreateWordDoc(object):
             return
 
         try:
-            json_dict = OrderedDict()
-            json_dict = json.loads(schema_string)
+            # Load the schema as an OrderedDict so the table contents remain in the
+            # same order each time the script is run
+            json_dict = json.loads(schema_string, object_pairs_hook=OrderedDict)
             self.json_parse_tree = json_dict
         except:
             print ("CreateWordDoc *** ERROR : error in JSON:", args.swagger)
@@ -347,7 +332,7 @@ class CreateWordDoc(object):
                 # GET = Read
                 if method == "get":
                     row_cells[1].text = method
-                # POST - update  (agreed on 05/02/2015)
+                # POST - update and create (with oic.if.ll)
                 if method == "post":
                     row_cells[2].text = method
                 # DELETE = Delete
