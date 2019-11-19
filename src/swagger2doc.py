@@ -30,6 +30,7 @@ import argparse
 import traceback
 from datetime import datetime
 from time import gmtime, strftime
+from collections import OrderedDict
 #import jsonref
 
 if sys.version_info < (3, 5):
@@ -122,22 +123,6 @@ def Table_annex(paragraph):
     fldChar.set(qn('w:fldCharType'), 'end')
     r.append(fldChar)
 
-def load_json_schema(filename, my_dir):
-    """
-    load the JSON schema file
-    :param filename: filename (with extension)
-    :param my_dir: path to the file
-    :return: json_dict
-    """
-    full_path = os.path.join(my_dir, filename)
-    if os.path.isfile(full_path) is False:
-        print ("json file does not exist:", full_path)
-
-    linestring = open(full_path, 'r').read()
-    json_dict = json.loads(linestring)
-
-    return json_dict
-
 
 def get_dir_list(dir, ext=None):
     """
@@ -158,7 +143,7 @@ def get_dir_list(dir, ext=None):
 def find_key(rec_dict, target, depth=0):
     """
     find key "target" in recursive dict
-    :param rec_dict: dict to search in, json schema dict, so it is combination of dict and arrays
+    :param rec_dict: dict to search in, json schema dict, so it is combination of dict, 'r').read() and arrays
     :param target: target key to search for
     :param depth: depth of the search (recursion)
     :return:
@@ -244,7 +229,9 @@ class CreateWordDoc(object):
             return
 
         try:
-            json_dict = json.loads(schema_string)
+            # Load the schema as an OrderedDict so the table contents remain in the
+            # same order each time the script is run
+            json_dict = json.loads(schema_string, object_pairs_hook=OrderedDict)
             self.json_parse_tree = json_dict
         except:
             print ("CreateWordDoc *** ERROR : error in JSON:", args.swagger)
@@ -345,7 +332,7 @@ class CreateWordDoc(object):
                 # GET = Read
                 if method == "get":
                     row_cells[1].text = method
-                # POST - update  (agreed on 05/02/2015)
+                # POST - update and create (with oic.if.ll)
                 if method == "post":
                     row_cells[2].text = method
                 # DELETE = Delete
@@ -354,6 +341,10 @@ class CreateWordDoc(object):
                 # NOTIFY = NOTIFY (does not exist)
                 if method == "get":
                     row_cells[4].text = "observe"
+
+            for cell_count in range(5):
+                row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
+
 
     def list_resources_crudn(self, parse_tree, resource_type=None):
         """
@@ -387,10 +378,20 @@ class CreateWordDoc(object):
 
         hdr_cells = self.table.rows[0].cells
         hdr_cells[0].text = 'Create'
+        hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[1].text = 'Read'
+        hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[2].text = 'Update'
+        hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[3].text = 'Delete'
+        hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[4].text = 'Notify'
+        hdr_cells[4].paragraphs[0].style = 'TABLE-col-heading'
+
 
         self.list_resource(parse_tree, resource_type)
 
@@ -446,7 +447,8 @@ class CreateWordDoc(object):
                                     #row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
                                     #txt_formatted = row_cells[4].text = description_text
                                     #row_cells[4].paragraphs[0].WD_ALIGN_PARAGRAPH.LEFT
-
+                                    for cell_count in range(5):
+                                        row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
                                 else:
                                     print ("list_properties : not handled:", prop, property_list[prop])
                             else:
@@ -491,6 +493,9 @@ class CreateWordDoc(object):
                                         row_cells[1].text = str(ocf_resource)
                                         row_cells[2].text = self.list_to_string(to_ocf)
                                         row_cells[3].text = self.list_to_string(from_ocf)
+
+                                        for cell_count in range(4):
+                                            row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
                                         #row_cells[4].text = description_text
                                     else:
                                         print ("list_properties_derived : not handled:", prop, properties[prop])
@@ -532,11 +537,15 @@ class CreateWordDoc(object):
                                         row_cells = self.tableAttribute.add_row().cells
                                         row_cells[0].text = str(prop)
                                         row_cells[1].text = type_text
+
                                         if prop in required_props:
                                             row_cells[2].text = "yes"
                                         else:
                                             row_cells[2].text = "no"
+
                                         row_cells[3].text = description_text
+                                        for cell_count in range(4):
+                                            row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
                                     else:
                                         print ("list_properties_derived : not handled:", prop, properties[prop])
                                 else:
@@ -579,10 +588,20 @@ class CreateWordDoc(object):
         #self.tableAttribute = self.document.add_table(rows=1, cols=5, style='TABLE-A')
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = 'Property name'
+        hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[1].text = 'Value type'
+        hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[2].text = 'Mandatory'
+        hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[3].text = 'Access mode'
+        hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
         hdr_cells[4].text = 'Description'
+        hdr_cells[4].paragraphs[0].style = 'TABLE-col-heading'
+
 
         level = 1
 
@@ -599,6 +618,9 @@ class CreateWordDoc(object):
             row_cells[2].text = "yes"
             row_cells[3].text = "Read Only"
             row_cells[4].text = "True = Sensed, False = Not Sensed."
+            for cell_count in range(5):
+                row_cells[cell_count].paragraphs[0].style = 'TABLE-cell'
+
 
     def list_attributes_derived(self, parse_tree, select_resource=None):
 
@@ -628,10 +650,16 @@ class CreateWordDoc(object):
         except:
             print ("no style set for table")
         hdr_cells = self.tableAttribute.rows[0].cells
+        #hdr_cells[0].text = str(self.derived_name) + ' Property name'
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
+        hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[1].text = 'OCF Resource'
+        hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[2].text = 'To OCF'
+        hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[3].text = 'From OCF'
+        hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
         level = 1
         if select_resource is None:
             pass
@@ -660,9 +688,14 @@ class CreateWordDoc(object):
 
         hdr_cells = self.tableAttribute.rows[0].cells
         hdr_cells[0].text = str(self.derived_name) + ' Property name'
+        hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[1].text = 'Type'
+        hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[2].text = 'Required'
+        hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
         hdr_cells[3].text = 'Description'
+        hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
         level = 1
         if select_resource is None:
             pass
@@ -898,10 +931,20 @@ class CreateWordDoc(object):
 
                 hdr_cells = self.tableAttribute.rows[0].cells
                 hdr_cells[0].text = 'Property name'
+                hdr_cells[0].paragraphs[0].style = 'TABLE-col-heading'
+
                 hdr_cells[1].text = 'Value type'
+                hdr_cells[1].paragraphs[0].style = 'TABLE-col-heading'
+
                 hdr_cells[2].text = 'Mandatory'
+                hdr_cells[2].paragraphs[0].style = 'TABLE-col-heading'
+
                 hdr_cells[3].text = 'Access mode'
+                hdr_cells[3].paragraphs[0].style = 'TABLE-col-heading'
+
                 hdr_cells[4].text = 'Description'
+                hdr_cells[4].paragraphs[0].style = 'TABLE-col-heading'
+
 
                 # add fields in table with contents..
                 self.parse_schema(schema_text)
