@@ -305,8 +305,9 @@ class CreateWordDoc(object):
         :return: string example "aabb"
         """
         my_string = ""
-        for x in input_list:
-            my_string = my_string + x
+        for x in input_list[:-1]:
+            my_string = my_string + x + "\n"
+        my_string = my_string + input_list[-1]
         return my_string
 
     def list_resource(self, parse_tree, resource_name):
