@@ -759,8 +759,16 @@ class CreateWordDoc(object):
         if self.annex_switch is True:
             par.style = 'ANNEX-heading1'
 
+        
         if resource_name is not None:
+            print("  --->resource_name:", resource_name )
             rt_name = self.get_value_by_path_name(parse_tree, resource_name, "rt")
+            if rt_name is None:
+                print("  ---->xxxx")
+                def_list = find_key_link(parse_tree, 'definitions')
+                for defx, defx_obj in def_list.items():
+                    rt_list = defx_obj["properties"]["rt"]["items"]["enum"]
+                    rt_name =rt_list[0]
         else:
             # todo fix this
             rt_name = ""
